@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glossa — Design Review</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   GLOSSA DESIGN TOKENS
+   Light, warm, approachable
+   ═══════════════════════════════════════════════════ */
+:root {
+  /* Surfaces */
+  --bg:          #FAFBFD;
+  --bg-2:        #FFFFFF;
+  --bg-3:        #F1F4F9;
+  --bg-4:        #E8ECF3;
+  --bg-elevated: #FFFFFF;
+
+  /* Borders */
+  --border:        rgba(15, 23, 42, .08);
+  --border-strong: rgba(15, 23, 42, .14);
+  --border-focus:  rgba(99, 102, 241, .5);
+
+  /* Ink */
+  --ink:    #0F172A;
+  --ink-2:  #334155;
+  --ink-3:  #64748B;
+  --muted:  #94A3B8;
+  --faint:  #CBD5E1;
+
+  /* Brand — Indigo/Violet core */
+  --accent:      #6366F1;
+  --accent-soft: rgba(99, 102, 241, .08);
+  --accent-ring: rgba(99, 102, 241, .25);
+  --accent-text: #4F46E5;
+  --accent-dark: #3730A3;
+
+  /* Semantic — Speaker channel */
+  --ch-speaker:      #6366F1;
+  --ch-speaker-soft: rgba(99, 102, 241, .08);
+  --ch-speaker-text: #4338CA;
+
+  /* Semantic — Translation channel */
+  --ch-trans:      #10B981;
+  --ch-trans-soft: rgba(16, 185, 129, .08);
+  --ch-trans-text: #059669;
+
+  /* Status */
+  --amber:       #F59E0B;
+  --amber-soft:  rgba(245, 158, 11, .08);
+  --teal:        #14B8A6;
+  --teal-soft:   rgba(20, 184, 166, .08);
+  --danger:      #EF4444;
+  --danger-soft: rgba(239, 68, 68, .06);
+  --success:     #10B981;
+  --success-soft:rgba(16, 185, 129, .08);
+  --info:        #3B82F6;
+  --info-soft:   rgba(59, 130, 246, .06);
+
+  /* Typography */
+  --f-display: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
+  --f-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --f-mono:    "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  /* Geometry */
+  --r-sm:  6px;
+  --r:     10px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-pill:999px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,.04);
+  --shadow:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,.06), 0 2px 4px -2px rgba(0,0,0,.04);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,.06), 0 4px 6px -4px rgba(0,0,0,.04);
+  --shadow-card:0 1px 3px rgba(0,0,0,.05), 0 0 0 1px rgba(0,0,0,.03);
+
+  /* Layout */
+  --sidebar-w: 260px;
+  --rail-w:    56px;
+  --drawer-w:  420px;
+}
+
+/* ═══════ RESET ═══════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink-2);
+  font: 400 15px/1.7 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+::selection { background: var(--accent-soft); color: var(--accent-dark); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+/* ═══════ PAGE LAYOUT ═══════ */
+.page { display: grid; grid-template-columns: var(--sidebar-w) minmax(0, 1fr); min-height: 100vh; }
+
+/* ═══════ SIDEBAR ═══════ */
+.sidebar {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: var(--bg-2); border-right: 1px solid var(--border);
+  padding: 28px 16px 48px; display: flex; flex-direction: column; gap: 2px;
+  scrollbar-width: thin; scrollbar-color: var(--bg-4) transparent;
+  box-shadow: 1px 0 0 var(--border);
+}
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg-4); border-radius: 3px; }
+
+.sidebar-brand {
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 8px 22px; margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-brand .logo {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, #6366F1, #8B5CF6);
+  display: grid; place-items: center; flex: none;
+  box-shadow: 0 2px 8px rgba(99,102,241,.25);
+}
+.sidebar-brand .logo svg { width: 20px; height: 20px; }
+.sidebar-brand .name {
+  font: 700 17px/1 var(--f-display); color: var(--ink);
+  letter-spacing: -.03em;
+}
+.sidebar-brand .sub {
+  font: 400 11px/1.4 var(--f-body); color: var(--muted); margin-top: 3px;
+  letter-spacing: .01em;
+}
+
+.nav-group {
+  font: 500 10.5px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); padding: 22px 10px 8px;
+}
+.sidebar a {
+  display: grid; grid-template-columns: 24px 1fr; gap: 8px; align-items: center;
+  padding: 8px 10px; border-radius: 8px; text-decoration: none;
+  color: var(--ink-3); font-size: 13.5px; font-weight: 450;
+  transition: all .15s ease;
+}
+.sidebar a .ref {
+  font: 400 10px/1.5 var(--f-mono); color: var(--faint);
+  font-variant-numeric: tabular-nums; text-align: center;
+}
+.sidebar a:hover { background: var(--accent-soft); color: var(--ink); }
+.sidebar a:hover .ref { color: var(--accent); }
+
+/* ═══════ MAIN ═══════ */
+.main { padding: 0 clamp(32px, 5vw, 80px) 160px; max-width: 1100px; }
+
+/* ═══════ HERO ═══════ */
+.hero { padding: 64px 0 0; }
+.eyebrow {
+  font: 500 11px/1 var(--f-body); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--accent); display: inline-flex; align-items: center; gap: 8px;
+  background: var(--accent-soft); padding: 6px 14px; border-radius: var(--r-pill);
+  margin-bottom: 28px;
+}
+.hero h1 {
+  font: 800 clamp(36px, 4.5vw, 56px)/1.06 var(--f-display);
+  letter-spacing: -.04em; color: var(--ink); margin-bottom: 12px;
+  text-wrap: balance;
+}
+.hero h1 .gradient {
+  background: linear-gradient(135deg, #6366F1, #8B5CF6, #A78BFA);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .tagline {
+  font: 500 clamp(18px, 2vw, 22px)/1.35 var(--f-display);
+  letter-spacing: -.02em; color: var(--accent-text); margin-bottom: 24px;
+}
+.hero .lede {
+  font-size: 16px; line-height: 1.75; max-width: 68ch; color: var(--ink-3);
+}
+.hero .lede b { color: var(--ink); font-weight: 600; }
+
+/* ═══════ SECTIONS ═══════ */
+.section { margin-top: 72px; scroll-margin-top: 32px; }
+.section > header { margin-bottom: 28px; }
+.s-ref {
+  font: 500 11px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.s-ref b { color: var(--accent); font-weight: 600; }
+.s-ref::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.section h2 {
+  font: 700 clamp(24px, 2.5vw, 32px)/1.2 var(--f-display);
+  letter-spacing: -.03em; color: var(--ink); margin-bottom: 10px;
+}
+.section .desc {
+  font-size: 15px; line-height: 1.7; color: var(--ink-3); max-width: 72ch;
+}
+.section .desc b { color: var(--ink); font-weight: 600; }
+
+/* ═══════ SUBHEADINGS ═══════ */
+.subhead {
+  font: 500 11px/1 var(--f-body); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted); margin: 40px 0 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.subhead::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+h3 {
+  font: 600 19px/1.3 var(--f-display); letter-spacing: -.02em;
+  color: var(--ink); margin: 36px 0 12px;
+}
+h4 {
+  font: 600 15px/1.35 var(--f-display); letter-spacing: -.01em;
+  color: var(--ink); margin: 24px 0 8px;
+}
+
+/* ═══════ TEXT ═══════ */
+p { margin: 0 0 14px; }
+code {
+  font: 12.5px/1.5 var(--f-mono); color: var(--accent-text);
+  background: var(--accent-soft); padding: 2px 7px; border-radius: 5px;
+  border: 1px solid var(--accent-ring);
+}
+pre {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 18px 22px; overflow-x: auto; margin: 16px 0;
+  font: 13px/1.7 var(--f-mono); color: var(--ink-3);
+}
+pre code { background: none; border: none; padding: 0; color: inherit; }
+strong { color: var(--ink); font-weight: 600; }
+ul, ol { padding-left: 20px; margin: 8px 0 16px; }
+li { margin: 5px 0; color: var(--ink-3); }
+li::marker { color: var(--faint); }
+
+/* ═══════ TABLES ═══════ */
+table {
+  width: 100%; border-collapse: collapse; font-size: 13.5px;
+  margin: 16px 0; font-variant-numeric: tabular-nums;
+}
+thead th {
+  text-align: left; font: 500 11px/1.4 var(--f-body); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--muted); font-weight: 500;
+  padding: 0 14px 12px 0; border-bottom: 2px solid var(--border-strong);
+}
+td {
+  padding: 12px 14px 12px 0; border-bottom: 1px solid var(--border);
+  vertical-align: top; color: var(--ink-3);
+}
+td:first-child { color: var(--ink-2); font-weight: 450; }
+td code { font-size: 12px; }
+tr:hover td { background: var(--accent-soft); }
+
+/* ═══════ CARDS ═══════ */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 16px 0; }
+.card {
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--bg-2); padding: 22px; display: flex; flex-direction: column; gap: 8px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+.card:hover { box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+.card h5 { font: 600 14px/1.3 var(--f-body); color: var(--ink); margin: 0; }
+.card p { font-size: 13px; color: var(--ink-3); margin: 0; line-height: 1.65; }
+.card.accent { border-color: var(--accent-ring); background: linear-gradient(to bottom, rgba(99,102,241,.03), var(--bg-2)); }
+.card.green { border-color: rgba(16,185,129,.25); background: linear-gradient(to bottom, rgba(16,185,129,.03), var(--bg-2)); }
+.card.amber { border-color: rgba(245,158,11,.25); background: linear-gradient(to bottom, rgba(245,158,11,.03), var(--bg-2)); }
+
+/* ═══════ INFO BOXES ═══════ */
+.note {
+  border-left: 3px solid var(--accent); background: var(--accent-soft);
+  padding: 16px 20px; border-radius: 0 var(--r) var(--r) 0;
+  font-size: 14px; line-height: 1.7; margin: 20px 0; color: var(--ink-3);
+}
+.note b { color: var(--ink); }
+.note.amber { border-color: var(--amber); background: var(--amber-soft); }
+.note.green { border-color: var(--success); background: var(--success-soft); }
+.note.danger { border-color: var(--danger); background: var(--danger-soft); }
+.note.info { border-color: var(--info); background: var(--info-soft); }
+
+/* ═══════ BADGES ═══════ */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font: 500 10.5px/1.4 var(--f-body); letter-spacing: .04em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: var(--r-pill);
+  border: 1px solid var(--border); color: var(--muted);
+}
+.badge.accent { color: var(--accent); border-color: var(--accent-ring); background: var(--accent-soft); }
+.badge.amber { color: #B45309; border-color: rgba(245,158,11,.3); background: var(--amber-soft); }
+.badge.new { color: var(--ch-trans-text); border-color: rgba(16,185,129,.3); background: var(--ch-trans-soft); }
+
+/* ═══════ DIAGRAM ═══════ */
+.diagram {
+  background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 22px 26px; margin: 16px 0; font: 13px/1.7 var(--f-mono); color: var(--ink-3);
+  overflow-x: auto; white-space: pre;
+}
+
+/* ═══════ COLOR SWATCHES ═══════ */
+.swatch-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.swatch-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.swatch {
+  width: 52px; height: 52px; border-radius: 12px;
+  border: 1px solid var(--border-strong); display: inline-block;
+  box-shadow: var(--shadow-sm);
+}
+.swatch-label {
+  font: 400 10px/1.2 var(--f-mono); color: var(--muted);
+  text-align: center; display: block;
+}
+
+/* ═══════ FEATURE GRID ═══════ */
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 10px; margin: 16px 0; }
+.feature-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--r);
+  background: var(--bg-2); box-shadow: var(--shadow-sm);
+  transition: box-shadow .15s;
+}
+.feature-item:hover { box-shadow: var(--shadow); }
+.feature-item .num {
+  width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent); flex: none;
+  font: 600 11px/1 var(--f-mono);
+}
+.feature-item .text { font-size: 13.5px; color: var(--ink-2); }
+.feature-item .text small { display: block; color: var(--muted); font-size: 11.5px; margin-top: 3px; }
+
+/* ═══════ COLUMNS ═══════ */
+.cols { display: grid; gap: 20px; }
+.cols-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.cols-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+/* ═══════ SCREEN CARDS ═══════ */
+.screen-card {
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--bg-2); overflow: hidden; margin: 18px 0;
+  box-shadow: var(--shadow-card);
+}
+.screen-card .sc-header {
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-3);
+}
+.screen-card .sc-header .sc-num {
+  font: 500 10.5px/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 4px 10px; border-radius: 6px;
+}
+.screen-card .sc-header .sc-title { font: 600 14px/1.2 var(--f-display); color: var(--ink); }
+.screen-card .sc-body { padding: 20px; }
+.screen-card .sc-body p { font-size: 13.5px; }
+
+/* ═══════ COMPARISON ═══════ */
+.compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 20px 0;
+  border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+.compare-side { padding: 24px; }
+.compare-side.before {
+  background: #0B1120; color: #CBD5E1;
+}
+.compare-side.before h5 { color: #E7EDF5; }
+.compare-side.before .compare-label { color: #00B4D8; background: rgba(0,180,216,.12); }
+.compare-side.after { background: var(--bg-2); }
+.compare-side.after .compare-label { color: var(--accent); background: var(--accent-soft); }
+.compare-label {
+  display: inline-flex; font: 500 10px/1 var(--f-body); letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: var(--r-pill); margin-bottom: 14px;
+}
+.compare-side h5 { font: 600 15px/1.3 var(--f-display); margin-bottom: 10px; color: var(--ink); }
+.compare-side p { font-size: 13px; margin: 0; line-height: 1.65; }
+
+/* ═══════ SHELL MOCKUP ═══════ */
+.shell-mock {
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--r-lg);
+  overflow: hidden; margin: 20px 0; box-shadow: var(--shadow-md);
+}
+.shell-mock__titlebar {
+  height: 40px; background: var(--bg-3); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 16px; gap: 8px;
+}
+.shell-mock__dot {
+  width: 12px; height: 12px; border-radius: 50%;
+}
+.shell-mock__dot.r { background: #EF4444; }
+.shell-mock__dot.y { background: #F59E0B; }
+.shell-mock__dot.g { background: #10B981; }
+.shell-mock__titlebar span {
+  flex: 1; text-align: center; font: 500 12px/1 var(--f-body); color: var(--muted); margin-right: 44px;
+}
+.shell-mock__body { display: grid; grid-template-columns: 56px 1fr; min-height: 420px; }
+.shell-mock__rail {
+  background: var(--bg-3); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; padding: 16px 0; gap: 6px;
+}
+.shell-mock__rail-icon {
+  width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center;
+  color: var(--muted); transition: all .15s;
+}
+.shell-mock__rail-icon:hover { background: var(--accent-soft); color: var(--accent); }
+.shell-mock__rail-icon.active { background: var(--accent-soft); color: var(--accent); }
+.shell-mock__rail-icon svg { width: 18px; height: 18px; }
+.shell-mock__stage { padding: 0; display: flex; flex-direction: column; }
+.shell-mock__status {
+  height: 44px; border-bottom: 1px solid var(--border); padding: 0 20px;
+  display: flex; align-items: center; gap: 16px; background: var(--bg-2);
+}
+.shell-mock__chip {
+  font: 500 11px/1 var(--f-body); color: var(--accent); background: var(--accent-soft);
+  padding: 5px 12px; border-radius: var(--r-pill); letter-spacing: .02em;
+}
+.shell-mock__lang { font: 400 12px/1 var(--f-body); color: var(--ink-3); }
+.shell-mock__led {
+  width: 8px; height: 8px; border-radius: 50%; margin-left: auto;
+}
+.shell-mock__led.connected { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.shell-mock__led.idle { background: var(--faint); }
+.shell-mock__content {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px; text-align: center; gap: 16px;
+}
+.shell-mock__orb {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(99,102,241,.15), rgba(139,92,246,.1));
+  border: 2px solid var(--accent-ring);
+  display: grid; place-items: center;
+}
+.shell-mock__orb svg { width: 28px; height: 28px; color: var(--accent); }
+.shell-mock__content h3 { font: 500 16px/1.4 var(--f-display); color: var(--ink); margin: 0; letter-spacing: -.01em; }
+.shell-mock__content p { font-size: 13px; color: var(--muted); margin: 0; }
+.shell-mock__transport {
+  height: 64px; border-top: 1px solid var(--border); padding: 0 20px;
+  display: flex; align-items: center; gap: 16px; background: var(--bg-2);
+}
+.shell-mock__meter {
+  flex: 1; height: 6px; background: var(--bg-4); border-radius: 3px; overflow: hidden;
+}
+.shell-mock__meter-fill {
+  height: 100%; border-radius: 3px; width: 0;
+}
+.shell-mock__meter-fill.speaker { background: var(--ch-speaker); width: 15%; }
+.shell-mock__meter-fill.trans { background: var(--ch-trans); width: 0; }
+.shell-mock__start-btn {
+  background: var(--accent); color: white; border: none; padding: 10px 24px;
+  border-radius: var(--r-pill); font: 600 13px/1 var(--f-body); cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 2px 8px rgba(99,102,241,.3);
+  transition: all .15s;
+}
+.shell-mock__start-btn:hover { background: var(--accent-dark); box-shadow: 0 4px 12px rgba(99,102,241,.4); }
+.shell-mock__start-btn svg { width: 14px; height: 14px; }
+
+/* ═══════ CONVERSATION MOCK ═══════ */
+.conv-mock { padding: 20px; display: flex; flex-direction: column; gap: 16px; flex: 1; overflow-y: auto; }
+.conv-turn { display: flex; flex-direction: column; gap: 6px; }
+.conv-label { font: 500 10.5px/1 var(--f-body); letter-spacing: .04em; text-transform: uppercase; }
+.conv-label.speaker { color: var(--ch-speaker); }
+.conv-label.trans { color: var(--ch-trans-text); }
+.conv-bubble {
+  padding: 12px 16px; border-radius: 12px; font-size: 14px; line-height: 1.6;
+  max-width: 85%;
+}
+.conv-bubble.speaker-src {
+  background: var(--ch-speaker-soft); color: var(--ink-2);
+  border: 1px solid rgba(99,102,241,.12);
+}
+.conv-bubble.trans-out {
+  background: var(--ch-trans-soft); color: var(--ink-2);
+  border: 1px solid rgba(16,185,129,.12);
+}
+.conv-meta { font: 400 11px/1 var(--f-mono); color: var(--muted); display: flex; gap: 12px; align-items: center; }
+
+/* ═══════ TOKEN SHOWCASE ═══════ */
+.token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin: 16px 0; }
+.token-card {
+  border: 1px solid var(--border); border-radius: var(--r); padding: 16px;
+  background: var(--bg-2); text-align: center; box-shadow: var(--shadow-sm);
+}
+.token-card .swatch-inline {
+  width: 100%; height: 40px; border-radius: 8px; margin-bottom: 10px;
+  border: 1px solid var(--border);
+}
+.token-card .token-name { font: 500 11px/1.3 var(--f-mono); color: var(--ink-3); }
+.token-card .token-value { font: 400 10px/1.3 var(--f-mono); color: var(--muted); margin-top: 2px; }
+
+/* ═══════ RESPONSIVE ═══════ */
+@media (max-width: 900px) {
+  .page { grid-template-columns: 1fr; }
+  .sidebar {
+    position: static; height: auto; border-right: 0;
+    border-bottom: 1px solid var(--border);
+    flex-direction: row; flex-wrap: wrap; padding: 16px; gap: 4px;
+  }
+  .nav-group { width: 100%; padding: 12px 0 4px; }
+  .hero { padding-top: 28px; }
+  .compare { grid-template-columns: 1fr; }
+  .shell-mock__body { grid-template-columns: 48px 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════ SIDEBAR ══════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 8l6 4-6 4"/>
+        <path d="M19 9l-5 3.5L19 16" opacity=".7"/>
+      </svg>
+    </div>
+    <div>
+      <div class="name">Glossa</div>
+      <div class="sub">Design Review</div>
+    </div>
+  </div>
+
+  <div class="nav-group">Brand</div>
+  <a href="#rebrand"><span class="ref">00</span>Rebrand Summary</a>
+  <a href="#identity"><span class="ref">01</span>Brand Identity</a>
+  <a href="#tokens"><span class="ref">02</span>Design Tokens</a>
+
+  <div class="nav-group">Layout</div>
+  <a href="#shell"><span class="ref">03</span>App Shell</a>
+  <a href="#main-window"><span class="ref">04</span>Main Window</a>
+  <a href="#settings"><span class="ref">05</span>Settings</a>
+  <a href="#subtitle"><span class="ref">06</span>Subtitle Overlay</a>
+
+  <div class="nav-group">Screens</div>
+  <a href="#auth"><span class="ref">07</span>Auth Flow</a>
+  <a href="#session"><span class="ref">08</span>Session States</a>
+  <a href="#history"><span class="ref">09</span>Meeting History</a>
+  <a href="#system-ui"><span class="ref">10</span>System UI</a>
+  <a href="#extension"><span class="ref">11</span>Extension</a>
+
+  <div class="nav-group">Internals</div>
+  <a href="#features"><span class="ref">12</span>Feature Inventory</a>
+  <a href="#components"><span class="ref">13</span>Components</a>
+  <a href="#accessibility"><span class="ref">14</span>Accessibility</a>
+  <a href="#platform"><span class="ref">15</span>Platform Behavior</a>
+  <a href="#metrics"><span class="ref">16</span>Redesign Metrics</a>
+</nav>
+
+<!-- ══════ MAIN ══════ -->
+<main class="main">
+
+<!-- ══════ HERO ══════ -->
+<header class="hero">
+  <p class="eyebrow">Design Review &mdash; Rebrand</p>
+  <h1><span class="gradient">Glossa</span> &mdash; Live Translation</h1>
+  <p class="tagline">Speak your language. Be understood in theirs.</p>
+  <p class="lede"><b>Glossa</b> (from Greek <em>&#947;&#955;&#974;&#963;&#963;&#945;</em>, meaning "tongue" or "language") is the new identity for the real-time speech translation platform formerly known as Rapport. This review documents the <b>complete visual rebrand</b> &mdash; new name, new design system, new layout &mdash; while preserving all <b>25 core features</b> and the entire technical architecture unchanged.</p>
+</header>
+
+<!-- ══════ 00 REBRAND SUMMARY ══════ -->
+<section class="section" id="rebrand">
+  <header>
+    <p class="s-ref"><b>00</b> Overview</p>
+    <h2>Rebrand Summary</h2>
+  </header>
+
+  <div class="note">
+    <b>Rebrand scope:</b> Visual identity and layout only. Zero features removed, zero added. All Zustand stores, services, audio pipeline, i18n keys, WebSocket connections, and behavioral tests remain untouched. The app is the same product with a fresh face.
+  </div>
+
+  <div class="compare">
+    <div class="compare-side before">
+      <span class="compare-label">Before &mdash; Rapport</span>
+      <h5>Dark-first design</h5>
+      <p>Navy backgrounds (#0B1120), cyan accent (#00B4D8), gradient bloom effects, glow rings. Four themes across two palettes (Navy, Rapport) &times; two grounds (Dark, Light).</p>
+    </div>
+    <div class="compare-side after">
+      <span class="compare-label">After &mdash; Glossa</span>
+      <h5>Light, open, approachable</h5>
+      <p>White/cream surfaces (#FAFBFD), indigo accent (#6366F1), soft shadows, no bloom. Clean typography with Inter. Warm and professional, designed for long translation sessions without eye fatigue.</p>
+    </div>
+  </div>
+
+  <div class="subhead">What Changes</div>
+  <table>
+    <thead><tr><th>Dimension</th><th>Rapport</th><th>Glossa</th></tr></thead>
+    <tbody>
+      <tr><td>Name</td><td>Rapport (codename: Sokuji)</td><td>Glossa</td></tr>
+      <tr><td>Visual tone</td><td>Dark, techy, gradients &amp; glow</td><td>Light, warm, clean &amp; open</td></tr>
+      <tr><td>Primary color</td><td>Cyan #00B4D8</td><td>Indigo #6366F1</td></tr>
+      <tr><td>Speaker channel</td><td>Slate #CBD5E1</td><td>Indigo #6366F1</td></tr>
+      <tr><td>Translation channel</td><td>Cyan #00B4D8</td><td>Emerald #10B981</td></tr>
+      <tr><td>Typography</td><td>Instrument Sans + Inter Tight + JetBrains Mono</td><td>Inter (display + body) + SF Mono</td></tr>
+      <tr><td>Surfaces</td><td>Dark navy with border glow</td><td>White with subtle shadows</td></tr>
+      <tr><td>Effects</td><td>Radial gradients, bloom, orb glow</td><td>Soft shadows, no effects</td></tr>
+      <tr><td>Layout</td><td>56px rail + 420px drawers</td><td>56px rail + 420px drawers (preserved)</td></tr>
+      <tr><td>Features</td><td>25 core features</td><td>25 core features (identical)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════ 01 BRAND IDENTITY ══════ -->
+<section class="section" id="identity">
+  <header>
+    <p class="s-ref"><b>01</b> Brand</p>
+    <h2>Brand Identity</h2>
+  </header>
+
+  <div class="subhead">Name &amp; Etymology</div>
+  <p><strong>Glossa</strong> (&#947;&#955;&#974;&#963;&#963;&#945;) &mdash; Ancient Greek for "tongue" and "language." The dual meaning captures both the physical act of speaking and the abstract concept of language, making it a natural fit for a speech translation product. Short, memorable, internationally pronounceable.</p>
+
+  <div class="subhead">Brand Mark &mdash; "Bridge"</div>
+  <p>Evolution of the Rapport "Meet" chevrons. The Glossa mark retains the dual-chevron motif (speaker &rarr; listener) but rendered with softer proportions and the new indigo palette. The gap between chevrons symbolizes the translation bridge.</p>
+
+  <div class="card-grid">
+    <div class="card accent">
+      <h5>Standard (32px+)</h5>
+      <p>Dual chevrons on indigo gradient rounded square. Speaker chevron at full opacity, listener at 70%. Stroke weight: 2.5px at 24px mark size.</p>
+    </div>
+    <div class="card">
+      <h5>Compact (&lt;24px)</h5>
+      <p>Single chevron only, thicker stroke. Minimum: 16px screen, 6mm print. Used in browser extension popup and system tray.</p>
+    </div>
+    <div class="card">
+      <h5>Wordmark</h5>
+      <p>"Glossa" in Inter 700 with -0.03em tracking. Mark + wordmark lockup with 14px gap. Used in title bar and marketing surfaces.</p>
+    </div>
+  </div>
+
+  <div class="subhead">Voice &amp; Personality</div>
+  <div class="cols cols-3">
+    <div class="card">
+      <h5>Warm</h5>
+      <p>Approachable and human. Translation is about connection, not technology. UI copy is conversational, never robotic.</p>
+    </div>
+    <div class="card">
+      <h5>Clear</h5>
+      <p>No jargon in user-facing copy. Technical terms (ASR, VAD, TTS) stay in developer settings only. Labels are verbs or plain nouns.</p>
+    </div>
+    <div class="card">
+      <h5>Confident</h5>
+      <p>Quiet confidence. No exclamation marks, no "awesome!" confirmations. The product works; the UI reflects that.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 02 DESIGN TOKENS ══════ -->
+<section class="section" id="tokens">
+  <header>
+    <p class="s-ref"><b>02</b> Tokens</p>
+    <h2>Design Tokens</h2>
+  </header>
+
+  <div class="subhead">Color Palette</div>
+
+  <h4>Surfaces</h4>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #FAFBFD"></div>
+      <div class="token-name">--bg</div>
+      <div class="token-value">#FAFBFD</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #FFFFFF"></div>
+      <div class="token-name">--bg-2</div>
+      <div class="token-value">#FFFFFF</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #F1F4F9"></div>
+      <div class="token-name">--bg-3</div>
+      <div class="token-value">#F1F4F9</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #E8ECF3"></div>
+      <div class="token-name">--bg-4</div>
+      <div class="token-value">#E8ECF3</div>
+    </div>
+  </div>
+
+  <h4>Brand &amp; Accent</h4>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #6366F1"></div>
+      <div class="token-name">--accent</div>
+      <div class="token-value">#6366F1</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #4F46E5"></div>
+      <div class="token-name">--accent-text</div>
+      <div class="token-value">#4F46E5</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #3730A3"></div>
+      <div class="token-name">--accent-dark</div>
+      <div class="token-value">#3730A3</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: rgba(99,102,241,.08)"></div>
+      <div class="token-name">--accent-soft</div>
+      <div class="token-value">8% opacity</div>
+    </div>
+  </div>
+
+  <h4>Semantic Channels</h4>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #6366F1"></div>
+      <div class="token-name">--ch-speaker</div>
+      <div class="token-value">#6366F1</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: rgba(99,102,241,.08)"></div>
+      <div class="token-name">--ch-speaker-soft</div>
+      <div class="token-value">8% opacity</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #10B981"></div>
+      <div class="token-name">--ch-trans</div>
+      <div class="token-value">#10B981</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: rgba(16,185,129,.08)"></div>
+      <div class="token-name">--ch-trans-soft</div>
+      <div class="token-value">8% opacity</div>
+    </div>
+  </div>
+
+  <h4>Ink &amp; Text</h4>
+  <div class="token-grid">
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #0F172A"></div>
+      <div class="token-name">--ink</div>
+      <div class="token-value">#0F172A</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #334155"></div>
+      <div class="token-name">--ink-2</div>
+      <div class="token-value">#334155</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #64748B"></div>
+      <div class="token-name">--ink-3</div>
+      <div class="token-value">#64748B</div>
+    </div>
+    <div class="token-card">
+      <div class="swatch-inline" style="background: #94A3B8"></div>
+      <div class="token-name">--muted</div>
+      <div class="token-value">#94A3B8</div>
+    </div>
+  </div>
+
+  <div class="subhead">Typography</div>
+  <table>
+    <thead><tr><th>Role</th><th>Font</th><th>Size</th><th>Weight</th><th>Use</th></tr></thead>
+    <tbody>
+      <tr><td>Display</td><td>Inter</td><td>26px+</td><td>700&ndash;800</td><td>Headings, hero text</td></tr>
+      <tr><td>Subtitle</td><td>Inter</td><td>22px</td><td>500</td><td>Overlay translation lines</td></tr>
+      <tr><td>Body</td><td>Inter</td><td>14.5px</td><td>400</td><td>Conversation bubbles, descriptions</td></tr>
+      <tr><td>Label</td><td>Inter</td><td>12.5px</td><td>450</td><td>Field labels, helper text</td></tr>
+      <tr><td>Eyebrow</td><td>Inter</td><td>10.5px</td><td>500 + caps + .08em</td><td>Channel labels, group headings</td></tr>
+      <tr><td>Data</td><td>SF Mono</td><td>12.5px</td><td>tabular-nums</td><td>Timers, dB levels, latency</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subhead">Geometry</div>
+  <pre><code>/* Border radius */
+--r-sm:  6px;   --r:     10px;   --r-lg:  16px;
+--r-xl:  20px;  --r-pill: 999px;
+
+/* Layout constants */
+--rail-w:   56px;    /* icon sidebar width */
+--drawer-w: 420px;   /* settings/panel drawer width */
+
+/* Shadows (replaces Rapport glow/bloom) */
+--shadow-sm:   0 1px 2px rgba(0,0,0,.04);
+--shadow:      0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+--shadow-md:   0 4px 6px -1px rgba(0,0,0,.06);
+--shadow-lg:   0 10px 15px -3px rgba(0,0,0,.06);
+--shadow-card: 0 1px 3px rgba(0,0,0,.05), 0 0 0 1px rgba(0,0,0,.03);
+
+/* Effects removed from Rapport */
+--stage-wash: none;   /* was: radial gradient behind conversation */
+--glow:       none;   /* was: primary button glow ring */
+--orb-fill:   none;   /* was: idle state orb gradient */</code></pre>
+</section>
+
+<!-- ══════ 03 APP SHELL ══════ -->
+<section class="section" id="shell">
+  <header>
+    <p class="s-ref"><b>03</b> Layout</p>
+    <h2>App Shell</h2>
+  </header>
+
+  <div class="desc">The Glossa shell preserves Rapport's proven layout structure &mdash; title bar, rail, status strip, stage, transport bar &mdash; but replaces the dark navy surfaces with light backgrounds and subtle shadows. The rail icons use the new indigo accent on hover and active states.</div>
+
+  <div class="subhead">Shell Structure (Updated)</div>
+  <div class="diagram">&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;            Title Bar (white, subtle border)             &#9474;
+&#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;       &#9474;     Status Strip (pill badges, soft bg)        &#9474;
+&#9474;       &#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474; Rail  &#9474;                                                &#9474;
+&#9474; 56px  &#9474;         Stage (white, shadow cards)             &#9474;
+&#9474; #F1F4 &#9474;                                                &#9474;
+&#9474;       &#9474;                                                &#9474;
+&#9474;       &#9500;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9508;
+&#9474;       &#9474;      Transport Bar (rounded pill button)       &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9524;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</div>
+
+  <div class="subhead">Interactive Mockup &mdash; Idle State</div>
+
+  <div class="shell-mock">
+    <div class="shell-mock__titlebar">
+      <span class="shell-mock__dot r"></span>
+      <span class="shell-mock__dot y"></span>
+      <span class="shell-mock__dot g"></span>
+      <span>Glossa</span>
+    </div>
+    <div class="shell-mock__body">
+      <div class="shell-mock__rail">
+        <div class="shell-mock__rail-icon active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8l6 4-6 4"/><path d="M19 9l-5 3.5L19 16" opacity=".6"/></svg>
+        </div>
+        <div class="shell-mock__rail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </div>
+        <div class="shell-mock__rail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </div>
+        <div class="shell-mock__rail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="shell-mock__rail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="shell-mock__rail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </div>
+      <div class="shell-mock__stage">
+        <div class="shell-mock__status">
+          <span class="shell-mock__chip">Stand-up</span>
+          <span class="shell-mock__lang">English &rarr; Japanese</span>
+          <span class="shell-mock__led idle"></span>
+        </div>
+        <div class="shell-mock__content">
+          <div class="shell-mock__orb">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+              <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+            </svg>
+          </div>
+          <h3>Ready to translate</h3>
+          <p>Click Start to begin real-time translation</p>
+        </div>
+        <div class="shell-mock__transport">
+          <div class="shell-mock__meter"><div class="shell-mock__meter-fill speaker"></div></div>
+          <button class="shell-mock__start-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Start Session
+          </button>
+          <div class="shell-mock__meter"><div class="shell-mock__meter-fill trans"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols cols-2">
+    <div>
+      <h4>Shell Components</h4>
+      <ul>
+        <li><strong>Title Bar</strong> &mdash; White background, "Glossa" wordmark, window controls, subtitle toggle</li>
+        <li><strong>Rail</strong> &mdash; 56px icon sidebar on light grey (#F1F4F9). Indigo active state. Icons: brand, Settings, Audio, Logs, History, Account</li>
+        <li><strong>Status Strip</strong> &mdash; Mode pill badge, language pair, session timer, connection LED</li>
+        <li><strong>Stage</strong> &mdash; White background, content-centered. Idle shows mic orb with subtle indigo ring</li>
+        <li><strong>Transport Bar</strong> &mdash; Channel meters (indigo speaker, emerald translation) + pill-shaped start button</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Navigation Model (Preserved)</h4>
+      <p>All secondary panels open as <strong>overlay drawers</strong> (420px wide, slide from right) with a translucent white scrim. The conversation remains visible underneath.</p>
+      <p>Panels: Settings (3 tabs), Logs, Display, History, Account</p>
+      <p>Drawers use soft shadow instead of Rapport's border glow. Focus trap and keyboard nav identical.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 04 MAIN WINDOW ══════ -->
+<section class="section" id="main-window">
+  <header>
+    <p class="s-ref"><b>04</b> Layout</p>
+    <h2>Main Window &mdash; Session States</h2>
+  </header>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 01</span><span class="sc-title">Idle (No Session)</span></div>
+    <div class="sc-body">
+      <p><strong>Stage:</strong> Centered mic orb with subtle indigo ring (no gradient bloom). Heading "Ready to translate" in Inter 500. Ghost button "Configure languages" below.</p>
+      <p><strong>Transport:</strong> Indigo mic meter (silent) &rarr; <strong>"Start Session"</strong> pill button (indigo, play icon) &rarr; Emerald output meter (silent).</p>
+      <p><strong>Status strip:</strong> Mode pill (indigo soft), language pair text, grey LED.</p>
+      <p><strong>Interactions:</strong> Identical to Rapport &mdash; mode chip opens popover, language pair opens config, start begins session.</p>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 02</span><span class="sc-title">Live Session (Basic Mode)</span></div>
+    <div class="sc-body">
+      <p><strong>Stage:</strong> Scrollable conversation with turn-by-turn bubbles on white background. Each turn: speaker label (indigo eyebrow) &rarr; source bubble (indigo-soft bg, 1px indigo border) &rarr; translation bubble (emerald-soft bg, 1px emerald border). Clean shadow cards instead of glow.</p>
+
+      <div class="subhead" style="margin-top:20px">Conversation Preview</div>
+      <div class="conv-mock" style="background: var(--bg); border-radius: var(--r); border: 1px solid var(--border);">
+        <div class="conv-turn">
+          <span class="conv-label speaker">You &mdash; Speaker</span>
+          <div class="conv-bubble speaker-src">Hello, thank you for joining today's meeting. I'd like to discuss the quarterly results.</div>
+          <div class="conv-bubble trans-out">&#12371;&#12435;&#12395;&#12385;&#12399;&#12289;&#26412;&#26085;&#12398;&#20250;&#35696;&#12395;&#12372;&#21442;&#21152;&#12356;&#12383;&#12384;&#12365;&#12354;&#12426;&#12364;&#12392;&#12358;&#12372;&#12374;&#12356;&#12414;&#12377;&#12290;&#22235;&#21322;&#26399;&#12398;&#32080;&#26524;&#12395;&#12388;&#12356;&#12390;&#35441;&#12375;&#21512;&#12356;&#12383;&#12356;&#12392;&#24605;&#12356;&#12414;&#12377;&#12290;</div>
+          <div class="conv-meta">
+            <span>&#9654; Play</span>
+            <span>14:32:07</span>
+            <span>312ms</span>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top:16px"><strong>Transport:</strong> Animated indigo mic meter &rarr; <strong>"End Session"</strong> red pill button &rarr; Animated emerald output meter.</p>
+      <p><strong>Audio viz:</strong> Same 3 HTML canvases via <code>WavRenderer.drawBars</code>. Bar fill uses <code>--ch-speaker</code> (indigo) and <code>--ch-trans</code> (emerald) instead of cyan.</p>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 03</span><span class="sc-title">Advanced Mode (3 Channels + Push-to-Talk)</span></div>
+    <div class="sc-body">
+      <p><strong>Additional over Screen 02:</strong></p>
+      <ul>
+        <li><strong>Third channel:</strong> Participant audio meter in transport bar</li>
+        <li><strong>Stage toolbar</strong> (floating top-right): Scope, Display, Font &plusmn;, Compact toggle, Export, Clear, Display settings &mdash; now with white background card + shadow instead of dark floating bar</li>
+        <li><strong>Push-to-talk:</strong> "Hold Space" hint with subtle bg, PTT button shows "Release Space" when held</li>
+        <li><strong>"Advanced" badge</strong> in status strip (indigo outline)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 05 SETTINGS ══════ -->
+<section class="section" id="settings">
+  <header>
+    <p class="s-ref"><b>05</b> Layout</p>
+    <h2>Settings Drawers</h2>
+  </header>
+
+  <div class="desc">Settings drawers slide from the right at 420px width. White background with subtle left shadow. All form controls use the new indigo focus ring. Tab bar at top with underline indicator.</div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 06</span><span class="sc-title">Settings: Provider Tab</span></div>
+    <div class="sc-body">
+      <p><strong>Purpose:</strong> Configure the translation engine, API keys, and provider-specific options. Identical feature set.</p>
+      <h4>Supported Providers (9+ &mdash; unchanged)</h4>
+      <table>
+        <thead><tr><th>Provider</th><th>Auth</th><th>Key Features</th></tr></thead>
+        <tbody>
+          <tr><td>Glossa Cloud</td><td>Account-based</td><td>Managed service, no API key needed</td></tr>
+          <tr><td>OpenAI</td><td>API key</td><td>GPT-4o Realtime, voice selection, system instructions</td></tr>
+          <tr><td>Google Gemini</td><td>API key</td><td>Gemini models</td></tr>
+          <tr><td>Volcengine ST</td><td>KeyId + Secret</td><td>Speech-to-text</td></tr>
+          <tr><td>Volcengine AST2</td><td>AppId + Token</td><td>Advanced speech-to-text</td></tr>
+          <tr><td>Soniox</td><td>API key</td><td>Voice cloning, org voice library</td></tr>
+          <tr><td>Zoom AI</td><td>Key + Secret</td><td>Zoom-specific</td></tr>
+          <tr><td>Palabra AI</td><td>Client creds</td><td>Palabra service</td></tr>
+          <tr><td>Local Inference</td><td>None (offline)</td><td>On-device WASM ASR/MT/TTS</td></tr>
+          <tr><td>Local Native</td><td>None (offline)</td><td>GPU via Python sidecar</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Visual changes:</strong> API key inputs use rounded borders with indigo focus. Validate button is indigo pill. Provider cards have subtle shadow on hover. All toggle switches use indigo instead of cyan.</p>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 07</span><span class="sc-title">Settings: General Tab</span></div>
+    <div class="sc-body">
+      <p><strong>Sections (all preserved):</strong></p>
+      <ol>
+        <li><strong>Appearance</strong> &mdash; Single light theme (Glossa Light). Clean, no palette/ground selector needed for launch. Future: optional dark mode.</li>
+        <li><strong>Interface Language</strong> &mdash; 12 simplified or 35 full locales</li>
+        <li><strong>Translation Languages</strong> &mdash; My Language + Other's Language with swap button (indigo icon)</li>
+        <li><strong>Output</strong> &mdash; Text Only toggle, Keep audio, Play original audio</li>
+        <li><strong>Account</strong> &mdash; User info card with avatar, sign-out link</li>
+        <li><strong>Summary Service</strong> &mdash; Provider picker, API key, model config</li>
+        <li><strong>Help</strong> &mdash; Version badge, restart tour, support links</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 08</span><span class="sc-title">Audio Settings</span></div>
+    <div class="sc-body">
+      <p><strong>Sections (all preserved):</strong> Microphone, Speaker Monitor, Participant Audio, Voice Passthrough, Noise Suppression. Visual changes: device dropdowns use rounded borders, volume slider track uses indigo fill, warning modals use white background with shadow.</p>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 09</span><span class="sc-title">Logs</span></div>
+    <div class="sc-body">
+      <p><strong>Purpose:</strong> Real-time WebSocket/API event log. Same virtual scrolling, same two tabs (Speaker/Participant).</p>
+      <p><strong>Visual change:</strong> Direction arrows use channel colors (&#8593; indigo, &#8595; emerald). White background with subtle alternating row shading. Timestamps in SF Mono instead of JetBrains Mono.</p>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 10</span><span class="sc-title">Account</span></div>
+    <div class="sc-body">
+      <p><strong>Elements:</strong> Avatar circle with indigo border + name + email + verification badge (emerald). Usage quota with indigo progress bar. "Upgrade to Premium" button (indigo pill). Clean card layout with shadows.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 06 SUBTITLE OVERLAY ══════ -->
+<section class="section" id="subtitle">
+  <header>
+    <p class="s-ref"><b>06</b> Layout</p>
+    <h2>Subtitle Overlay</h2>
+  </header>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 16</span><span class="sc-title">Subtitle Overlay Window</span></div>
+    <div class="sc-body">
+      <p><strong>Purpose:</strong> Floating, resizable, always-on-top subtitle display. Same three states (Idle, Live, Ended), same toolbar controls, same two rendering modes (Compact/Expanded).</p>
+      <p><strong>Visual changes:</strong> Default background is semi-transparent white instead of dark. Text colors use indigo (source) and dark emerald (translation) for readability on light backgrounds. Toolbar icons are muted grey with indigo hover. Settings popover uses the same light card treatment.</p>
+      <p><strong>Behavior:</strong> Draggable, resizable, auto-hide toolbar &mdash; all identical. Background opacity still configurable 0&ndash;100%.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 07 AUTH FLOW ══════ -->
+<section class="section" id="auth">
+  <header>
+    <p class="s-ref"><b>07</b> Screens</p>
+    <h2>Authentication Flow</h2>
+  </header>
+
+  <div class="cols cols-2">
+    <div class="screen-card" style="margin:0">
+      <div class="sc-header"><span class="sc-num">Screen 11</span><span class="sc-title">Welcome (First Run)</span></div>
+      <div class="sc-body">
+        <p><strong>Layout:</strong> Centered card on light bg. Glossa logo + "Welcome to Glossa" heading. Language selector. Two option cards: Regular User (recommended, green badge) and Experienced User. Vision link in footer.</p>
+      </div>
+    </div>
+    <div class="screen-card" style="margin:0">
+      <div class="sc-header"><span class="sc-num">Screen 12</span><span class="sc-title">Onboarding Tour (9 Steps)</span></div>
+      <div class="sc-body">
+        <p><strong>Guided tour:</strong> Same <code>react-joyride</code> integration, same step targets. Spotlight uses indigo ring instead of cyan. Tooltip cards are white with shadow. Same Back/Next/Skip/Finish controls.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols cols-3" style="margin-top:16px">
+    <div class="screen-card" style="margin:0">
+      <div class="sc-header"><span class="sc-num">Screen 13</span><span class="sc-title">Sign In</span></div>
+      <div class="sc-body">
+        <p>Centered white card, rounded corners, subtle shadow. Indigo "Sign In" button. Same error states.</p>
+      </div>
+    </div>
+    <div class="screen-card" style="margin:0">
+      <div class="sc-header"><span class="sc-num">Screen 14</span><span class="sc-title">Sign Up</span></div>
+      <div class="sc-body">
+        <p>Same fields (Name, email, password, confirm). Indigo submit button. Success triggers emerald verification banner.</p>
+      </div>
+    </div>
+    <div class="screen-card" style="margin:0">
+      <div class="sc-header"><span class="sc-num">Screen 15</span><span class="sc-title">Reset Password</span></div>
+      <div class="sc-body">
+        <p>Same two-step OTP flow. 60-second cooldown. Indigo "Reset Password" button.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 08 SESSION STATES ══════ -->
+<section class="section" id="session">
+  <header>
+    <p class="s-ref"><b>08</b> Screens</p>
+    <h2>Session &amp; Mode States</h2>
+  </header>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 04</span><span class="sc-title">Mode Picker &amp; Device Popover</span></div>
+    <div class="sc-body">
+      <p><strong>Mode Picker</strong> (3 options, unchanged):</p>
+      <table>
+        <thead><tr><th>Mode</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><strong>You</strong></td><td>Your voice &rarr; translated for others</td></tr>
+          <tr><td><strong>Others</strong></td><td>Others' voices &rarr; translated for you</td></tr>
+          <tr><td><strong>Both</strong></td><td>Two-way at the same time</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Visual:</strong> White popover card with shadow. Selected mode has indigo left border. Device dropdowns rounded with indigo focus ring. Lock icon during session uses muted grey.</p>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 05</span><span class="sc-title">Display Settings &amp; Export</span></div>
+    <div class="sc-body">
+      <p><strong>Display Settings popover:</strong> White card with shadow. Segmented controls use indigo active state. Font size slider has indigo track. Compact toggle with indigo switch.</p>
+      <p><strong>Export popover:</strong> Copy, Download .txt, Download .json &mdash; all with hover state using indigo soft background.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 09 MEETING HISTORY ══════ -->
+<section class="section" id="history">
+  <header>
+    <p class="s-ref"><b>09</b> Screens</p>
+    <h2>Meeting History</h2>
+  </header>
+
+  <div class="cols cols-2">
+    <div class="card">
+      <h5>History Panel</h5>
+      <p>White card list with subtle shadows. Per-meeting: title, date pill badge, duration. Delete with optimistic UI (emerald undo toast). Hover reveals delete icon.</p>
+    </div>
+    <div class="card">
+      <h5>Meeting Detail</h5>
+      <p>Back arrow + title + "Summarize" indigo pill button. Export to markdown. Error states in amber/red note cards. Summary rendered in clean Inter typography.</p>
+    </div>
+    <div class="card">
+      <h5>Save Consent</h5>
+      <p>First-time consent card. Indigo "Accept" button, ghost "Decline". Same local/cloud distinction.</p>
+    </div>
+    <div class="card">
+      <h5>Summary View</h5>
+      <p>Same minimal markdown renderer. Clean typography: headings in Inter 600, body in Inter 400, bullets with muted markers.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 10 SYSTEM UI ══════ -->
+<section class="section" id="system-ui">
+  <header>
+    <p class="s-ref"><b>10</b> Screens</p>
+    <h2>System UI</h2>
+  </header>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 18</span><span class="sc-title">Dialogs &amp; Banners</span></div>
+    <div class="sc-body">
+      <h4>Update Dialog</h4>
+      <p>White modal card with shadow-lg. Version transition displayed in mono font. Download progress bar uses indigo fill. Changelog rendered in clean card.</p>
+      <h4>Audio Feedback Warning</h4>
+      <p>Amber-bordered note card. Severity badge (low/medium/high). "Open Audio Settings" indigo button.</p>
+      <h4>System Banners</h4>
+      <p>Full-width, below title bar. Info (blue-soft), Warning (amber-soft), Error (red-soft). Same triggers: update, pactl, API key, model download, audio channel.</p>
+    </div>
+  </div>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 19</span><span class="sc-title">Toasts &amp; Connection States</span></div>
+    <div class="sc-body">
+      <h4>Toast Variants</h4>
+      <ul>
+        <li><strong>Success</strong> (emerald left bar): "Conversation copied", "API key validated"</li>
+        <li><strong>Warning</strong> (amber left bar): Cooldown timer</li>
+        <li><strong>Error</strong> (red left bar): "Failed to copy", "Network error"</li>
+      </ul>
+      <p>Toasts are white cards with shadow-md and colored left border. Same auto-dismiss, same <code>role="status"</code>.</p>
+      <h4>Connection LED States (7 &mdash; unchanged)</h4>
+      <table>
+        <thead><tr><th>State</th><th>LED</th><th>Label</th></tr></thead>
+        <tbody>
+          <tr><td>Disconnected</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--faint);vertical-align:middle"></span> Grey</td><td>Disconnected</td></tr>
+          <tr><td>Connecting</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--amber);vertical-align:middle"></span> Amber</td><td>Connecting&hellip;</td></tr>
+          <tr><td>Connected</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--success);vertical-align:middle"></span> Green</td><td>Connected</td></tr>
+          <tr><td>Reconnecting</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--amber);vertical-align:middle"></span> Amber</td><td>Reconnecting&hellip;</td></tr>
+          <tr><td>Error</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--danger);vertical-align:middle"></span> Red</td><td>Connection Error</td></tr>
+          <tr><td>API Key Required</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--danger);vertical-align:middle"></span> Red</td><td>API Key Required</td></tr>
+          <tr><td>Mic Required</td><td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--danger);vertical-align:middle"></span> Red</td><td>Microphone Required</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 11 EXTENSION ══════ -->
+<section class="section" id="extension">
+  <header>
+    <p class="s-ref"><b>11</b> Screens</p>
+    <h2>Browser Extension</h2>
+  </header>
+
+  <div class="screen-card">
+    <div class="sc-header"><span class="sc-num">Screen 20</span><span class="sc-title">Extension Popup, Permission &amp; Side Panel</span></div>
+    <div class="sc-body">
+      <h4>Popup</h4>
+      <p>White card with Glossa logo + name + version badge. "Open side panel" indigo button, "Open full page" ghost button. Site detection badge (emerald for supported sites).</p>
+      <h4>Side Panel (380px)</h4>
+      <p>Full app shell scaled narrow: rail 46px with 34px buttons on light grey, status strip 40px, compact mode chip, single mic channel. Same conversation at 13px font, but on white background.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 12 FEATURE INVENTORY ══════ -->
+<section class="section" id="features">
+  <header>
+    <p class="s-ref"><b>12</b> Internals</p>
+    <h2>Feature Inventory &mdash; All 25 Preserved</h2>
+  </header>
+
+  <div class="note green">
+    <b>Zero features removed, zero added.</b> Every feature below works identically in Glossa. The rebrand is purely visual &mdash; all stores, services, audio pipeline, i18n keys, and behavioral tests are untouched.
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-item"><div class="num">01</div><div class="text">Real-time speech translation<small>MainPanel, ConversationRow</small></div></div>
+    <div class="feature-item"><div class="num">02</div><div class="text">Multi-provider support (9 providers)<small>ProviderSection, ProviderSpecificSettings</small></div></div>
+    <div class="feature-item"><div class="num">03</div><div class="text">Dual UI mode (Basic/Advanced)<small>SimpleSettings, AdvancedSettings</small></div></div>
+    <div class="feature-item"><div class="num">04</div><div class="text">Subtitle overlay window<small>SubtitleApp, SubtitleBar, SubtitleStream</small></div></div>
+    <div class="feature-item"><div class="num">05</div><div class="text">Push-to-talk / Push-to-translate<small>TransportBar, MainPanel</small></div></div>
+    <div class="feature-item"><div class="num">06</div><div class="text">Audio device management<small>AudioDeviceSection, ModeDevicePopover</small></div></div>
+    <div class="feature-item"><div class="num">07</div><div class="text">Virtual audio routing (meetings)<small>ModePicker, SystemAudioSection</small></div></div>
+    <div class="feature-item"><div class="num">08</div><div class="text">On-device WASM inference<small>ModelManagementSection, ModelImportModal</small></div></div>
+    <div class="feature-item"><div class="num">09</div><div class="text">Native GPU inference (sidecar)<small>NativeModelManagementSection, EngineSection</small></div></div>
+    <div class="feature-item"><div class="num">10</div><div class="text">Voice cloning (Soniox)<small>SonioxVoiceSection</small></div></div>
+    <div class="feature-item"><div class="num">11</div><div class="text">Voice library management<small>VoiceLibrarySection</small></div></div>
+    <div class="feature-item"><div class="num">12</div><div class="text">Karaoke playback highlighting<small>ConversationRow</small></div></div>
+    <div class="feature-item"><div class="num">13</div><div class="text">Meeting recording &amp; history<small>HistoryPanel, MeetingDetail</small></div></div>
+    <div class="feature-item"><div class="num">14</div><div class="text">AI meeting summarization<small>MeetingDetail, SummaryView</small></div></div>
+    <div class="feature-item"><div class="num">15</div><div class="text">Conversation export (txt/json/clipboard)<small>ExportButton</small></div></div>
+    <div class="feature-item"><div class="num">16</div><div class="text">Theme system<small>AppearanceSection</small></div></div>
+    <div class="feature-item"><div class="num">17</div><div class="text">Onboarding tour (9 steps)<small>Onboarding, OnboardingContext</small></div></div>
+    <div class="feature-item"><div class="num">18</div><div class="text">User auth (email/password + OTP)<small>SignInForm, SignUpForm, ForgotPasswordForm</small></div></div>
+    <div class="feature-item"><div class="num">19</div><div class="text">Usage quota &amp; billing<small>UserAccountInfo</small></div></div>
+    <div class="feature-item"><div class="num">20</div><div class="text">Browser extension (3 surfaces)<small>popup, fullpage, subtitle-overlay</small></div></div>
+    <div class="feature-item"><div class="num">21</div><div class="text">Auto-update (Electron)<small>UpdateBanner, UpdateDialog</small></div></div>
+    <div class="feature-item"><div class="num">22</div><div class="text">Event logging<small>LogsPanel</small></div></div>
+    <div class="feature-item"><div class="num">23</div><div class="text">Audio feedback detection<small>AudioFeedbackWarning</small></div></div>
+    <div class="feature-item"><div class="num">24</div><div class="text">Display color customization<small>DisplaySettingsPopover</small></div></div>
+    <div class="feature-item"><div class="num">25</div><div class="text">i18n (12+ interface languages)<small>LanguageSection</small></div></div>
+  </div>
+</section>
+
+<!-- ══════ 13 COMPONENTS ══════ -->
+<section class="section" id="components">
+  <header>
+    <p class="s-ref"><b>13</b> Internals</p>
+    <h2>Component Hierarchy</h2>
+  </header>
+
+  <p class="desc">The component tree is unchanged. Visual updates are applied through CSS custom properties and shadow/effect tokens. No structural React changes required.</p>
+
+  <pre><code>App.tsx
+&#9500;&#9472; AppProviders (StrictMode &rarr; PostHog &rarr; Toast)
+&#9474;  &#9492; RootLayout (analytics)
+&#9474;     &#9492; Home (store hydration)
+&#9474;        &#9492; UserProfileProvider &rarr; OnboardingProvider
+&#9474;           &#9492; MainLayout
+&#9474;              &#9500;&#9472; Welcome (first-run)
+&#9474;              &#9500;&#9472; Rail (navigation)
+&#9474;              &#9500;&#9472; MainPanel
+&#9474;              &#9474;  &#9500;&#9472; StatusStrip
+&#9474;              &#9474;  &#9500;&#9472; ConversationBubble[] &rarr; ConversationRow
+&#9474;              &#9474;  &#9500;&#9472; WaveformStrip (&times;3 canvases)
+&#9474;              &#9474;  &#9500;&#9472; TransportBar (ModePicker + PTT)
+&#9474;              &#9474;  &#9500;&#9472; ModeDevicePopover
+&#9474;              &#9474;  &#9500;&#9472; DisplayModeButton + ExportButton
+&#9474;              &#9474;  &#9492; DisplaySettingsPopover
+&#9474;              &#9500;&#9472; Drawer (Settings)
+&#9474;              &#9474;  &#9500;&#9472; SimpleSettings / AdvancedSettings
+&#9474;              &#9474;  &#9474;  &#9500;&#9472; AccountSection
+&#9474;              &#9474;  &#9474;  &#9500;&#9472; LanguageSection
+&#9474;              &#9474;  &#9474;  &#9500;&#9472; AppearanceSection
+&#9474;              &#9474;  &#9474;  &#9500;&#9472; ProviderSection
+&#9474;              &#9474;  &#9474;  &#9500;&#9472; AudioDeviceSection
+&#9474;              &#9474;  &#9474;  &#9500;&#9472; SummarySection
+&#9474;              &#9474;  &#9474;  &#9492; HelpSection + UpdateSection
+&#9474;              &#9474;  &#9492; PanelBar + TabBar
+&#9474;              &#9500;&#9472; Drawer (Logs) &rarr; LogsPanel
+&#9474;              &#9500;&#9472; Drawer (History) &rarr; HistoryPanel / MeetingDetail
+&#9474;              &#9500;&#9472; Drawer (Account) &rarr; UserAccountInfo
+&#9474;              &#9500;&#9472; Onboarding (react-joyride)
+&#9474;              &#9492; SettingsInitializer (renderless)
+&#9500;&#9472; SubtitleApp (separate window/iframe)
+&#9474;  &#9500;&#9472; SubtitleBar
+&#9474;  &#9500;&#9472; SubtitleStream / SubtitleIdle
+&#9474;  &#9492; DisplaySettingsPopover
+&#9500;&#9472; Auth Routes (SignIn, SignUp, ForgotPassword)
+&#9492; Vision (product roadmap page)</code></pre>
+
+  <div class="subhead">State Management (13 Zustand Stores &mdash; Unchanged)</div>
+  <table>
+    <thead><tr><th>Store</th><th>Responsibility</th></tr></thead>
+    <tbody>
+      <tr><td><code>settingsStore</code></td><td>Provider config, API keys, language pairs, UI mode, theme, all preferences</td></tr>
+      <tr><td><code>audioStore</code></td><td>Audio context, mode (standup/meeting), participant mute state</td></tr>
+      <tr><td><code>subtitleStore</code></td><td>Subtitle appearance (bg opacity, colors, highlight toggle)</td></tr>
+      <tr><td><code>conversationDisplayStore</code></td><td>Main conversation display colors</td></tr>
+      <tr><td><code>logStore</code></td><td>Event log entries per client</td></tr>
+      <tr><td><code>modelStore</code></td><td>WASM local inference model status, initialization</td></tr>
+      <tr><td><code>nativeModelStore</code></td><td>Python sidecar native model catalog, selection</td></tr>
+      <tr><td><code>audioSystemStore</code></td><td>System audio availability, pactl status (Linux)</td></tr>
+      <tr><td><code>updateStore</code></td><td>App update lifecycle (check/download/install)</td></tr>
+      <tr><td><code>playbackStore</code></td><td>Karaoke word-level playback highlight</td></tr>
+      <tr><td><code>sonioxVoiceStore</code></td><td>Soniox voice cloning library</td></tr>
+      <tr><td><code>licenseConsentStore</code></td><td>Non-commercial model license acknowledgment</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══════ 14 ACCESSIBILITY ══════ -->
+<section class="section" id="accessibility">
+  <header>
+    <p class="s-ref"><b>14</b> Internals</p>
+    <h2>Accessibility</h2>
+  </header>
+
+  <div class="note info">
+    <b>Contrast improvement:</b> The Glossa light theme achieves higher contrast ratios than Rapport's dark themes for body text, while maintaining AAA compliance. All ARIA patterns, focus management, and keyboard navigation are preserved unchanged.
+  </div>
+
+  <div class="cols cols-3">
+    <div>
+      <h4>Keyboard (Unchanged)</h4>
+      <ul>
+        <li>Tab/Shift+Tab focus cycling (drawer trap)</li>
+        <li>Arrow keys for tabs (L/R/Home/End)</li>
+        <li>Space/Enter for toggle switches</li>
+        <li>Escape closes with nesting awareness</li>
+      </ul>
+    </div>
+    <div>
+      <h4>ARIA (Unchanged)</h4>
+      <ul>
+        <li><code>role="switch"</code> + <code>aria-checked</code></li>
+        <li><code>aria-current="page"</code> on active rail</li>
+        <li><code>role="dialog"</code> + <code>aria-modal</code></li>
+        <li><code>aria-live="polite"</code> on toasts</li>
+        <li><code>aria-pressed</code> on segmented controls</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contrast (Glossa Light)</h4>
+      <ul>
+        <li><code>--ink</code> on <code>--bg</code>: 16.8:1 (AAA)</li>
+        <li><code>--ink-2</code> on <code>--bg</code>: 10.7:1 (AAA)</li>
+        <li><code>--ink-3</code> on <code>--bg</code>: 5.6:1 (AA)</li>
+        <li><code>--accent</code> on <code>--bg</code>: 4.6:1 (AA)</li>
+        <li><code>prefers-reduced-motion</code>: respected</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 15 PLATFORM ══════ -->
+<section class="section" id="platform">
+  <header>
+    <p class="s-ref"><b>15</b> Internals</p>
+    <h2>Platform Behavior (Unchanged)</h2>
+  </header>
+
+  <div class="cols cols-3">
+    <div class="card">
+      <h5>Electron (Desktop)</h5>
+      <p>Custom title bar updated to white background. Subtitle as separate BrowserWindow. Auto-update. Virtual audio driver renamed: <code>GlossaVirtualAudio</code>. macOS .pkg installer with updated welcome/conclusion pages.</p>
+    </div>
+    <div class="card">
+      <h5>Browser Extension</h5>
+      <p>Side panel (380px, narrowed rail). Popup with site detection. Hidden permission iframe. Subtitle overlay iframe. <code>chrome.runtime</code> ports for store sync. All behavior unchanged.</p>
+    </div>
+    <div class="card">
+      <h5>Linux</h5>
+      <p><code>pactl</code> dependency for virtual audio (PulseAudio). Screen recording permission check. AppImage + .deb distribution. No auto-update for non-AppImage builds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 16 REDESIGN METRICS ══════ -->
+<section class="section" id="metrics">
+  <header>
+    <p class="s-ref"><b>16</b> Analysis</p>
+    <h2>Redesign Metrics</h2>
+  </header>
+
+  <div class="subhead">Implementation Scope</div>
+  <table>
+    <thead><tr><th>Category</th><th>Change Required</th></tr></thead>
+    <tbody>
+      <tr><td>CSS custom properties</td><td>Replace all color, shadow, and effect tokens in theme file</td></tr>
+      <tr><td>Font loading</td><td>Remove Instrument Sans + Inter Tight + JetBrains Mono; add Inter + SF Mono</td></tr>
+      <tr><td>Brand mark SVG</td><td>Update logo in Rail, title bar, popup, installer</td></tr>
+      <tr><td>Display strings</td><td>"Rapport" &rarr; "Glossa" in all UI text, about dialogs, installers</td></tr>
+      <tr><td>Packaging metadata</td><td>App name, bundle ID, store listings</td></tr>
+      <tr><td>Virtual audio driver</td><td>Rename HAL plugin identifier</td></tr>
+      <tr><td>React components</td><td>Zero structural changes</td></tr>
+      <tr><td>Zustand stores</td><td>Zero changes</td></tr>
+      <tr><td>Audio pipeline</td><td>Zero changes</td></tr>
+      <tr><td>Tests</td><td>Update display string snapshots only</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subhead">Complexity Hotspots</div>
+  <table>
+    <thead><tr><th>Component</th><th>Lines</th><th>Rebrand Impact</th></tr></thead>
+    <tbody>
+      <tr><td><code>MainPanel.tsx</code></td><td>~1,579</td><td>Low &mdash; visual changes via CSS tokens only</td></tr>
+      <tr><td><code>ProviderSection.tsx</code></td><td>Large</td><td>Low &mdash; "Rapport Cloud" &rarr; "Glossa Cloud" string change</td></tr>
+      <tr><td><code>SubtitleApp.tsx</code></td><td>Large</td><td>Low &mdash; default colors via tokens</td></tr>
+      <tr><td><code>Settings.tsx</code></td><td>Medium</td><td>Low &mdash; appearance section simplified (single theme)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="subhead">Counts</div>
+  <div class="cols cols-3">
+    <div class="card accent">
+      <h5>20 Screens</h5>
+      <p>4 auth + 3 main states + 5 settings + 2 subtitle + 3 system + 3 extension</p>
+    </div>
+    <div class="card accent">
+      <h5>~50 Components</h5>
+      <p>13 Zustand stores, 3 React contexts, 2 custom hooks, 6 style files to update</p>
+    </div>
+    <div class="card accent">
+      <h5>9 Providers</h5>
+      <p>Each with unique config UI. "Rapport Cloud" &rarr; "Glossa Cloud" is the only string change</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Summary:</b> The Glossa rebrand is a CSS-layer operation. Replace the theme tokens, update display strings, swap the brand mark, and update packaging metadata. Zero React structural changes. Zero store changes. Zero audio pipeline changes. The light, clean aesthetic is achieved entirely through the new token set documented above.
+  </div>
+</section>
+
+</main>
+</div>
+
+</body>
+</html>

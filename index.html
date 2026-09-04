@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glossa — Desktop Prototype</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   GLOSSA DESIGN TOKENS — Light Theme (default)
+   ═══════════════════════════════════════════════════ */
+:root, [data-theme="light"] {
+  --bg:          #FAFBFD;
+  --bg-2:        #FFFFFF;
+  --bg-3:        #F1F4F9;
+  --bg-4:        #E8ECF3;
+  --border:        rgba(15, 23, 42, .08);
+  --border-strong: rgba(15, 23, 42, .14);
+  --ink:    #0F172A;
+  --ink-2:  #334155;
+  --ink-3:  #64748B;
+  --muted:  #94A3B8;
+  --faint:  #CBD5E1;
+  --accent:      #6366F1;
+  --accent-soft: rgba(99, 102, 241, .08);
+  --accent-ring: rgba(99, 102, 241, .25);
+  --accent-text: #4F46E5;
+  --accent-dark: #3730A3;
+  --ch-speaker:      #6366F1;
+  --ch-speaker-soft: rgba(99, 102, 241, .08);
+  --ch-trans:      #10B981;
+  --ch-trans-soft: rgba(16, 185, 129, .08);
+  --ch-trans-text: #059669;
+  --amber:       #F59E0B;
+  --amber-soft:  rgba(245, 158, 11, .08);
+  --danger:      #EF4444;
+  --danger-soft: rgba(239, 68, 68, .06);
+  --success:     #10B981;
+  --success-soft:rgba(16, 185, 129, .08);
+  --info:        #3B82F6;
+  --info-soft:   rgba(59, 130, 246, .06);
+  --shadow-sm:  0 1px 2px rgba(0,0,0,.04);
+  --shadow:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 6px -1px rgba(0,0,0,.06), 0 2px 4px -2px rgba(0,0,0,.04);
+  --shadow-lg:  0 10px 15px -3px rgba(0,0,0,.06), 0 4px 6px -4px rgba(0,0,0,.04);
+  --shadow-card:0 1px 3px rgba(0,0,0,.05), 0 0 0 1px rgba(0,0,0,.03);
+  --logo-glow: 0 2px 8px rgba(99,102,241,.2);
+}
+
+/* ═══════════════════════════════════════════════════
+   DARK THEME
+   ═══════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg:          #0B1120;
+  --bg-2:        #111827;
+  --bg-3:        #1E293B;
+  --bg-4:        #334155;
+  --border:        rgba(255, 255, 255, .08);
+  --border-strong: rgba(255, 255, 255, .14);
+  --ink:    #F1F5F9;
+  --ink-2:  #CBD5E1;
+  --ink-3:  #94A3B8;
+  --muted:  #64748B;
+  --faint:  #475569;
+  --accent:      #818CF8;
+  --accent-soft: rgba(129, 140, 248, .12);
+  --accent-ring: rgba(129, 140, 248, .3);
+  --accent-text: #A5B4FC;
+  --accent-dark: #6366F1;
+  --ch-speaker:      #818CF8;
+  --ch-speaker-soft: rgba(129, 140, 248, .12);
+  --ch-trans:      #34D399;
+  --ch-trans-soft: rgba(52, 211, 153, .1);
+  --ch-trans-text: #6EE7B7;
+  --amber:       #FBBF24;
+  --amber-soft:  rgba(251, 191, 36, .1);
+  --danger:      #F87171;
+  --danger-soft: rgba(248, 113, 113, .1);
+  --success:     #34D399;
+  --success-soft:rgba(52, 211, 153, .1);
+  --info:        #60A5FA;
+  --info-soft:   rgba(96, 165, 250, .1);
+  --shadow-sm:  none;
+  --shadow:     none;
+  --shadow-md:  none;
+  --shadow-lg:  none;
+  --shadow-card: 0 0 0 1px var(--border);
+  --logo-glow: 0 2px 16px rgba(129,140,248,.4);
+}
+
+/* ═══════ SHARED TOKENS ═══════ */
+:root {
+  --f-display: "Inter", "SF Pro Display", system-ui, -apple-system, sans-serif;
+  --f-body:    "Inter", system-ui, -apple-system, sans-serif;
+  --f-mono:    "SF Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --r-sm: 6px; --r: 10px; --r-lg: 16px; --r-xl: 20px; --r-pill: 999px;
+  --sidebar-w: 200px;
+  --titlebar-h: 40px;
+  --transport-h: 72px;
+  --transport-h-live: 80px;
+  --icon-lang: #3B82F6;
+  --icon-audio: #10B981;
+  --icon-output: #F59E0B;
+  --icon-appearance: #8B5CF6;
+}
+
+/* ═══════ RESET ═══════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{background:var(--bg);color:var(--ink-2);font:400 14px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;height:100%;overflow:hidden}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+::selection{background:var(--accent-soft);color:var(--accent-dark)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* ═══════ APP SHELL ═══════ */
+.app{display:grid;grid-template-rows:var(--titlebar-h) 1fr;height:100vh;width:100vw;background:var(--bg-2);overflow:hidden}
+
+/* ═══════ TITLE BAR ═══════ */
+.titlebar{display:flex;align-items:center;padding:0 16px;gap:8px;background:var(--bg-3);border-bottom:1px solid var(--border);z-index:100}
+.titlebar__dots{display:flex;gap:8px;align-items:center}
+.titlebar__dot{width:12px;height:12px;border-radius:50%}
+.titlebar__dot--r{background:#EF4444}.titlebar__dot--y{background:#F59E0B}.titlebar__dot--g{background:#10B981}
+.titlebar__name{flex:1;text-align:center;font:500 12.5px/1 var(--f-body);color:var(--muted);margin-right:36px}
+.titlebar__cc{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--r-pill);font:450 11px/1 var(--f-body);color:var(--muted);border:1px solid var(--border);transition:all .15s}
+.titlebar__cc:hover,.titlebar__cc.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-ring)}
+.titlebar__cc svg{width:14px;height:14px}
+
+/* ═══════ BODY ═══════ */
+.app-body{display:grid;grid-template-columns:var(--sidebar-w) 1fr;overflow:hidden;position:relative}
+
+/* ═══════ SIDEBAR ═══════ */
+.sidebar{display:flex;flex-direction:column;background:var(--bg-2);border-right:1px solid var(--border);z-index:50;overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--bg-4);border-radius:2px}
+.sidebar__brand{display:flex;align-items:center;gap:12px;padding:20px 18px 18px;border-bottom:1px solid var(--border)}
+.sidebar__logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:grid;place-items:center;flex:none;box-shadow:var(--logo-glow);transition:box-shadow .3s}
+.sidebar__logo svg{width:17px;height:17px}
+.sidebar__wordmark{font:700 16px/1 var(--f-display);color:var(--ink);letter-spacing:-.03em}
+.sidebar__nav{padding:12px 10px;flex:1;display:flex;flex-direction:column;gap:2px}
+.sidebar__item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:var(--r);color:var(--ink-3);font:450 13.5px/1 var(--f-body);transition:all .15s;text-decoration:none;cursor:pointer;position:relative}
+.sidebar__item:hover{background:var(--bg-3);color:var(--ink)}
+.sidebar__item.active{background:var(--accent-soft);color:var(--accent);border-left:3px solid var(--accent);padding-left:9px}
+.sidebar__item svg{width:18px;height:18px;flex:none;opacity:.7}
+.sidebar__item.active svg{opacity:1}
+.sidebar__divider{height:1px;background:var(--border);margin:4px 12px}
+.sidebar__section{font:500 10px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:8px 12px 4px}
+.sidebar__footer{padding:12px 10px;border-top:1px solid var(--border);position:relative}
+.sidebar__footer::before{content:'';position:absolute;top:-24px;left:0;right:0;height:24px;background:linear-gradient(to top,var(--bg-2),transparent);pointer-events:none}
+.sidebar__user{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r);cursor:pointer;transition:all .15s}
+.sidebar__user:hover{background:var(--bg-3)}
+.sidebar__avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:grid;place-items:center;font:600 13px/1 var(--f-body);color:white;flex:none}
+.sidebar__user-info{flex:1;min-width:0}
+.sidebar__user-name{font:500 13px/1.2 var(--f-body);color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar__user-plan{font:400 11px/1.2 var(--f-body);color:var(--muted)}
+
+/* ═══════ MAIN AREA ═══════ */
+.main{display:grid;grid-template-rows:1fr var(--transport-h);overflow:hidden;background:var(--bg)}
+
+/* ═══════ STAGE ═══════ */
+.stage{overflow-y:auto;overflow-x:hidden;position:relative}
+.stage::-webkit-scrollbar{width:6px}
+.stage::-webkit-scrollbar-thumb{background:var(--bg-4);border-radius:3px}
+
+/* ═══════ IDLE STATE ═══════ */
+.idle{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:28px;text-align:center;padding:40px;background:linear-gradient(180deg, rgba(139,92,246,.04) 0%, rgba(255,255,255,0) 60%)}
+[data-theme="dark"] .idle{background:linear-gradient(180deg, rgba(129,140,248,.04) 0%, rgba(0,0,0,0) 60%)}
+.idle__orb{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.06));border:2px solid var(--accent-ring);display:grid;place-items:center;transition:all .6s}
+.idle__orb svg{width:40px;height:40px;color:var(--accent)}
+.idle__orb.pulse{animation:orb-pulse 2s ease-in-out infinite}
+@keyframes orb-pulse{0%,100%{transform:scale(1);border-color:var(--accent-ring)}50%{transform:scale(1.05);border-color:var(--accent)}}
+.idle__title{font:600 24px/1.2 var(--f-display);color:var(--ink);letter-spacing:-.03em}
+.idle__desc{font:400 15px/1.6 var(--f-body);color:var(--muted);max-width:380px}
+.idle__lang-display{display:flex;align-items:center;gap:14px;padding:14px 24px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-card)}
+.idle__lang-flag{font-size:24px;line-height:1}
+.idle__lang{font:500 15px/1 var(--f-body);color:var(--ink)}
+.idle__lang-arrow{color:var(--accent);font-size:18px}
+.idle__lang-edit{font:400 12px/1 var(--f-body);color:var(--accent);cursor:pointer;margin-left:8px}
+.idle__lang-edit:hover{text-decoration:underline}
+.idle__recent{margin-top:16px}
+.idle__recent-label{font:400 11px/1 var(--f-body);color:var(--faint);margin-bottom:8px}
+.idle__recent-list{display:flex;gap:6px}
+.idle__recent-item{font:400 11px/1 var(--f-body);color:var(--muted);padding:5px 10px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-pill);cursor:pointer;transition:all .12s}
+.idle__recent-item:hover{border-color:var(--accent-ring);color:var(--accent)}
+
+/* ═══════ CONVERSATION ═══════ */
+.conversation{display:none;flex-direction:column;gap:28px;padding:28px 32px;min-height:100%}
+.conversation.visible{display:flex}
+.conv-turn{display:flex;flex-direction:column;gap:6px;animation:turn-in .45s ease both}
+.conv-turn:nth-child(1){animation-delay:0s}
+.conv-turn:nth-child(2){animation-delay:.06s}
+.conv-turn:nth-child(3){animation-delay:.12s}
+.conv-turn:nth-child(4){animation-delay:.18s}
+@keyframes turn-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.conv-label{font:500 11px/1 var(--f-body);letter-spacing:.03em;padding-left:2px}
+.conv-label--you{color:var(--ch-speaker);display:flex;align-items:center;gap:6px}
+.conv-label--you::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--ch-speaker)}
+.conv-label--translation{color:var(--ch-trans-text);display:flex;align-items:center;gap:6px}
+.conv-label--translation::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--ch-trans)}
+.conv-bubble{padding:14px 20px;border-radius:16px;font:400 15px/1.65 var(--f-body);max-width:80%}
+.conv-bubble--src{background:var(--bg-2);color:var(--ink-2);border:1px solid var(--border);border-left:3px solid var(--ch-speaker);box-shadow:var(--shadow-sm)}
+.conv-bubble--trans{background:rgba(16,185,129,.06);color:var(--ink-2);border:1px solid rgba(16,185,129,.1);border-left:3px solid var(--ch-trans)}
+[data-theme="dark"] .conv-bubble--trans{background:rgba(52,211,153,.06)}
+.conv-meta{display:flex;gap:12px;align-items:center;padding-left:2px;opacity:.7}
+.conv-meta span{font:400 10px/1 var(--f-mono);color:var(--muted)}
+.conv-meta__play{color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:4px;font-size:11px}
+.conv-meta__play:hover{color:var(--accent-dark);opacity:1}
+.conv-meta__play svg{width:11px;height:11px}
+
+/* ═══════ TRANSPORT BAR ═══════ */
+.transport{display:flex;align-items:center;gap:16px;padding:0 24px;border-top:1px solid var(--border);background:var(--bg-2);transition:height .25s ease}
+.main.main--live{grid-template-rows:1fr var(--transport-h-live)}
+.transport__lang{display:flex;align-items:center;gap:8px;font:450 13px/1 var(--f-body);color:var(--ink-3);flex:none;cursor:pointer;padding:6px 10px;border-radius:var(--r);transition:all .12s}
+.transport__lang:hover{background:var(--bg-3)}
+.transport__lang-flag{font-size:18px}
+.transport__lang-arrow{color:var(--faint);font-size:14px}
+.transport__meter{flex:1;display:flex;align-items:center;gap:10px}
+.transport__meter-label{font:500 10px/1 var(--f-body);color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em;min-width:24px}
+.meter{flex:1;height:6px;border-radius:3px;background:var(--bg-4);overflow:hidden}
+.meter__fill{height:100%;border-radius:3px;transition:width .15s;width:0}
+.meter__fill--speaker{background:var(--ch-speaker)}
+.meter__fill--trans{background:var(--ch-trans)}
+.transport__center{flex:none;display:flex;align-items:center;gap:12px}
+.transport__btn{display:flex;align-items:center;gap:8px;padding:12px 32px;border-radius:var(--r-pill);font:600 14px/1 var(--f-body);transition:all .2s;white-space:nowrap}
+.transport__btn--start{background:var(--accent);color:white;box-shadow:0 2px 12px rgba(99,102,241,.3)}
+.transport__btn--start:hover{background:var(--accent-dark);box-shadow:0 4px 16px rgba(99,102,241,.4);transform:translateY(-1px)}
+.transport__btn--stop{background:var(--danger);color:white;box-shadow:0 2px 10px rgba(239,68,68,.25);min-width:140px;height:44px;font-size:15px;justify-content:center}
+.transport__btn--stop:hover{background:#DC2626;transform:translateY(-1px);box-shadow:0 4px 16px rgba(239,68,68,.35)}
+.transport__btn--init{background:var(--bg-4);color:var(--muted);cursor:wait}
+.transport__btn svg{width:16px;height:16px}
+.transport__timer{font:500 16px/1 var(--f-mono);color:var(--ink-2);font-variant-numeric:tabular-nums;min-width:52px;display:none}
+.transport__timer.visible{display:block}
+.transport__status{display:flex;align-items:center;gap:6px;flex:none}
+.transport__dot{width:8px;height:8px;border-radius:50%;transition:all .3s}
+.transport__dot--idle{background:var(--faint)}
+.transport__dot--connecting{background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.transport__dot--live{background:var(--success);box-shadow:0 0 8px rgba(16,185,129,.4);animation:dot-pulse 2s ease infinite}
+@keyframes dot-pulse{0%,100%{box-shadow:0 0 6px rgba(16,185,129,.3)}50%{box-shadow:0 0 12px rgba(16,185,129,.6)}}
+.transport__status-label{font:400 11.5px/1 var(--f-body);color:var(--muted)}
+
+/* ═══════ SCRIM ═══════ */
+.scrim{position:absolute;inset:0;background:rgba(15,23,42,.18);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
+.scrim.visible{opacity:1;pointer-events:auto}
+[data-theme="dark"] .scrim.visible{background:rgba(0,0,0,.4)}
+
+/* ═══════ DRAWER ═══════ */
+.drawer{position:absolute;top:0;right:0;bottom:0;width:420px;background:var(--bg-2);border-left:1px solid var(--border);box-shadow:-4px 0 20px rgba(0,0,0,.06);transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);z-index:70;display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:translateX(0)}
+.drawer__header{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--border);flex:none}
+.drawer__title{font:600 16px/1.2 var(--f-display);color:var(--ink);flex:1;letter-spacing:-.02em}
+.drawer__close{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--muted);transition:all .15s}
+.drawer__close:hover{background:var(--bg-3);color:var(--ink)}
+.drawer__close svg{width:16px;height:16px}
+.drawer__body{flex:1;overflow-y:auto;padding:22px}
+.drawer__body::-webkit-scrollbar{width:5px}
+.drawer__body::-webkit-scrollbar-thumb{background:var(--bg-4);border-radius:3px}
+
+/* ═══════ SETTINGS ═══════ */
+.settings-card{padding:0 0 20px;border:none;border-radius:0;margin-bottom:0;background:transparent}
+.settings-card + .settings-card{border-top:1px solid var(--border);padding-top:20px;margin-top:4px}
+.settings-card__title{font:600 16px/1.2 var(--f-display);color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;padding-left:12px;border-left:4px solid var(--accent)}
+.settings-card__title svg{width:16px;height:16px;color:var(--accent)}
+#section-languages .settings-card__title svg{color:var(--icon-lang)}
+#section-languages .settings-card__title{border-left-color:var(--icon-lang)}
+#section-audio .settings-card__title svg{color:var(--icon-audio)}
+#section-audio .settings-card__title{border-left-color:var(--icon-audio)}
+#section-output .settings-card__title svg{color:var(--icon-output)}
+#section-output .settings-card__title{border-left-color:var(--icon-output)}
+#section-appearance .settings-card__title svg{color:var(--icon-appearance)}
+#section-appearance .settings-card__title{border-left-color:var(--icon-appearance)}
+.form-label{display:block;font:500 13px/1 var(--f-body);color:var(--ink-3);margin-bottom:8px}
+.form-select{width:100%;padding:12px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-2);color:var(--ink);font-size:14.5px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;height:44px;transition:all .15s}
+.form-select:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.form-select:hover{border-color:var(--border-strong)}
+.form-input{width:100%;padding:12px 14px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-2);color:var(--ink);font-size:14px;transition:all .15s}
+.form-input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.form-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.form-row:last-child{border-bottom:none}
+.form-row__label{font:400 14px/1.4 var(--f-body);color:var(--ink-2)}
+.form-row__sub{font:400 12px/1.4 var(--f-body);color:var(--muted);margin-top:2px}
+.form-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:var(--r-pill);font:500 13px/1 var(--f-body);transition:all .15s}
+.form-btn--primary{background:var(--accent);color:white}
+.form-btn--primary:hover{background:var(--accent-dark)}
+.form-btn--ghost{border:1px solid var(--border-strong);color:var(--ink-3)}
+.form-btn--ghost:hover{background:var(--bg-3);color:var(--ink)}
+.toggle{position:relative;width:44px;height:26px;border-radius:13px;background:var(--bg-4);cursor:pointer;transition:background .25s ease;flex:none}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,.15);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.toggle.on::after{transform:translateX(18px)}
+.advanced-info-banner{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:var(--r);padding:12px 16px;margin-bottom:20px;font:400 13px/1.5 var(--f-body);color:var(--ink-3);display:flex;align-items:flex-start;gap:8px}
+.advanced-info-banner svg{flex:none;width:16px;height:16px;color:var(--amber);margin-top:1px}
+[data-theme="dark"] .advanced-info-banner{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.12)}
+.advanced-link{display:flex;align-items:center;gap:6px;font:400 13px/1 var(--f-body);color:var(--accent);cursor:pointer;padding:8px 0;margin-top:4px}
+.advanced-link:hover{text-decoration:underline}
+.advanced-link svg{width:14px;height:14px;transition:transform .2s}
+.advanced-section{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.advanced-section.visible{display:block}
+.form-group{margin-bottom:16px}
+
+/* ═══════ HISTORY ═══════ */
+.history-item{padding:16px 18px;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:10px;cursor:pointer;transition:all .15s}
+.history-item:hover{border-color:var(--border-strong);box-shadow:var(--shadow)}
+.history-item__title{font:500 14px/1.3 var(--f-body);color:var(--ink)}
+.history-item__meta{display:flex;gap:12px;margin-top:6px;font:400 12px/1 var(--f-body);color:var(--muted)}
+.history-item__meta span{display:flex;align-items:center;gap:4px}
+.history-item__meta svg{width:13px;height:13px}
+
+/* ═══════ ACCOUNT ═══════ */
+.account-card{text-align:center;padding:32px 24px;border:1px solid var(--border);border-radius:var(--r-lg);margin-bottom:20px;background:linear-gradient(135deg,rgba(99,102,241,.03),rgba(139,92,246,.02))}
+[data-theme="dark"] .account-card{background:linear-gradient(135deg,rgba(129,140,248,.04),rgba(139,92,246,.03))}
+.account-card__avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:grid;place-items:center;margin:0 auto 16px;font:600 28px/1 var(--f-display);color:white;box-shadow:0 4px 12px rgba(99,102,241,.2)}
+.account-card__name{font:600 18px/1.2 var(--f-display);color:var(--ink)}
+.account-card__email{font:400 13px/1.4 var(--f-body);color:var(--muted);margin-top:4px}
+.quota-bar{margin-top:24px;text-align:left}
+.quota-bar__header{display:flex;justify-content:space-between;font:400 13px/1 var(--f-body);color:var(--ink-3);margin-bottom:8px}
+.quota-bar__track{height:10px;border-radius:5px;background:var(--bg-4);overflow:hidden}
+.quota-bar__fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),#8B5CF6,#A78BFA);transition:width .6s}
+.quota-bar__footer{display:flex;justify-content:space-between;font:400 11px/1 var(--f-mono);color:var(--muted);margin-top:6px}
+
+/* ═══════ POPOVER ═══════ */
+.popover{position:absolute;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);padding:16px;z-index:80;opacity:0;pointer-events:none;transform:translateY(6px);transition:all .2s}
+.popover.visible{opacity:1;pointer-events:auto;transform:none}
+.popover__title{font:600 14px/1.2 var(--f-display);color:var(--ink);margin-bottom:4px}
+.popover__subtitle{font:400 12.5px/1.4 var(--f-body);color:var(--muted);margin-bottom:14px}
+.mode-option{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:var(--r);cursor:pointer;transition:all .12s;border:2px solid transparent;margin-bottom:6px}
+.mode-option:last-child{margin-bottom:0}
+.mode-option:hover{background:var(--bg-3)}
+.mode-option.selected{border-color:var(--accent);background:var(--accent-soft)}
+.mode-option__icon{width:40px;height:40px;border-radius:var(--r);background:var(--bg-3);display:grid;place-items:center;color:var(--accent);flex:none;font-size:20px}
+.mode-option.selected .mode-option__icon{background:var(--accent);color:white}
+.mode-option__label{font:500 14px/1.2 var(--f-body);color:var(--ink)}
+.mode-option__desc{font:400 12px/1.3 var(--f-body);color:var(--muted);margin-top:2px}
+
+/* ═══════ EXPORT POPOVER ═══════ */
+.export-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);cursor:pointer;transition:all .12s}
+.export-option:hover{background:var(--accent-soft)}
+.export-option svg{width:16px;height:16px;color:var(--accent);flex:none}
+.export-option span{font:400 13px/1 var(--f-body);color:var(--ink-2)}
+
+/* ═══════ DISPLAY SETTINGS POPOVER ═══════ */
+.display-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.display-row__label{font:400 13px/1.4 var(--f-body);color:var(--ink-2)}
+.segment-control{display:flex;border:1px solid var(--border-strong);border-radius:var(--r);overflow:hidden}
+.segment-btn{padding:6px 14px;font:450 12px/1 var(--f-body);color:var(--ink-3);transition:all .12s;border-right:1px solid var(--border)}
+.segment-btn:last-child{border-right:none}
+.segment-btn:hover{background:var(--bg-3)}
+.segment-btn.active{background:var(--accent);color:white}
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row input[type="range"]{flex:1;accent-color:var(--accent);height:4px}
+.slider-row__val{font:400 12px/1 var(--f-mono);color:var(--muted);min-width:28px;text-align:right}
+
+/* ═══════ STAGE TOOLBAR ═══════ */
+.stage-toolbar{position:absolute;top:12px;right:16px;display:flex;gap:2px;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);padding:4px;box-shadow:var(--shadow-md);z-index:10;opacity:0;pointer-events:none;transition:opacity .2s}
+.stage-toolbar.visible{opacity:1;pointer-events:auto}
+.stage-toolbar__btn{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:var(--muted);transition:all .12s;position:relative}
+.stage-toolbar__btn:hover{background:var(--bg-3);color:var(--ink)}
+.stage-toolbar__btn svg{width:16px;height:16px}
+
+/* ═══════ SETUP WIZARD ═══════ */
+.wizard-overlay{position:fixed;inset:0;background:rgba(15,23,42,.15);backdrop-filter:blur(4px);z-index:300;display:grid;place-items:center}
+.wizard-overlay.hidden{display:none}
+[data-theme="dark"] .wizard-overlay{background:rgba(0,0,0,.5)}
+.wizard{background:var(--bg-2);border-radius:var(--r-xl);box-shadow:var(--shadow-lg);width:520px;max-width:90vw;overflow:hidden;animation:wizard-in .4s ease;border:1px solid var(--border)}
+@keyframes wizard-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+.wizard__header{padding:32px 36px 0;text-align:center}
+.wizard__logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:grid;place-items:center;margin:0 auto 18px;box-shadow:0 4px 12px rgba(99,102,241,.25)}
+.wizard__logo svg{width:24px;height:24px}
+.wizard__title{font:700 24px/1.2 var(--f-display);color:var(--ink);letter-spacing:-.03em}
+.wizard__subtitle{font:400 14px/1.6 var(--f-body);color:var(--muted);margin-top:6px}
+.wizard__steps{display:flex;justify-content:center;gap:8px;margin-top:20px}
+.wizard__step{width:8px;height:8px;border-radius:50%;background:var(--bg-4);transition:all .3s}
+.wizard__step.active{background:var(--accent);width:24px;border-radius:4px}
+.wizard__step.done{background:var(--accent)}
+.wizard__body{padding:28px 36px}
+.wizard__question{font:500 15px/1.4 var(--f-body);color:var(--ink);margin-bottom:16px}
+.wizard__grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wizard__option{padding:16px;border:2px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:all .15s;text-align:center}
+.wizard__option:hover{border-color:var(--border-strong);box-shadow:var(--shadow-sm)}
+.wizard__option.selected{border-color:var(--accent);background:var(--accent-soft)}
+.wizard__option-emoji{font-size:28px;margin-bottom:8px;display:block}
+.wizard__option-label{font:500 14px/1.2 var(--f-body);color:var(--ink);display:block}
+.wizard__option-desc{font:400 11.5px/1.4 var(--f-body);color:var(--muted);margin-top:4px;display:block}
+.wizard__footer{padding:0 36px 28px;display:flex;justify-content:space-between;align-items:center}
+.wizard__skip{font:400 13px/1 var(--f-body);color:var(--muted);cursor:pointer}
+.wizard__skip:hover{color:var(--ink-3)}
+.wizard__next{padding:11px 28px;border-radius:var(--r-pill);background:var(--accent);color:white;font:600 14px/1 var(--f-body);transition:all .15s;box-shadow:0 2px 8px rgba(99,102,241,.25)}
+.wizard__next:hover{background:var(--accent-dark)}
+.wizard__next:disabled{background:var(--bg-4);color:var(--muted);cursor:not-allowed;box-shadow:none}
+
+/* ═══════ LOGS ═══════ */
+.log-entry{display:grid;grid-template-columns:20px 110px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font:400 12.5px/1.4 var(--f-mono)}
+.log-entry__arrow{font-size:14px;font-weight:600}
+.log-entry__arrow--up{color:var(--ch-speaker)}
+.log-entry__arrow--down{color:var(--ch-trans)}
+.log-entry__time{color:var(--muted);font-variant-numeric:tabular-nums}
+.log-entry__event{color:var(--ink-3)}
+.log-entry__tag{font:400 10px/1 var(--f-mono);padding:2px 8px;border-radius:var(--r-pill);background:var(--bg-3);color:var(--muted)}
+
+/* ═══════ TOAST ═══════ */
+.toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:200;pointer-events:none}
+.toast{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:14px 20px;display:flex;align-items:center;gap:10px;font:400 13.5px/1.4 var(--f-body);color:var(--ink-2);pointer-events:auto;animation:toast-in .3s ease;min-width:240px}
+@keyframes toast-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.toast--success{border-left:3px solid var(--success)}
+.toast--error{border-left:3px solid var(--danger)}
+.toast--info{border-left:3px solid var(--info)}
+.toast__icon{flex:none;width:16px;height:16px}
+.toast--success .toast__icon{color:var(--success)}
+.toast--error .toast__icon{color:var(--danger)}
+.toast--info .toast__icon{color:var(--info)}
+
+/* ═══════ GLOBAL INTERACTIVE TRANSITIONS ═══════ */
+button,a,.sidebar__item,.form-select,.form-input,.toggle,.history-item,.mode-option,.export-option{transition:all .15s ease}
+.history-item:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.upgrade-btn{background:linear-gradient(135deg,var(--accent),#8B5CF6)!important;position:relative;overflow:hidden}
+.upgrade-btn::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.12) 50%,transparent 60%);transform:rotate(30deg);pointer-events:none}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ══════ SETUP WIZARD ══════ -->
+<div class="wizard-overlay" id="wizardOverlay">
+  <div class="wizard">
+    <div class="wizard__header">
+      <div class="wizard__logo"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M9 10h.01"/><path d="M12 10h.01" opacity=".7"/><path d="M15 10h.01" opacity=".4"/></svg></div>
+      <div class="wizard__title" id="wizardTitle">Welcome to Glossa</div>
+      <div class="wizard__subtitle" id="wizardSubtitle">Let's set up your translation in three quick steps</div>
+      <div class="wizard__steps">
+        <div class="wizard__step active" data-step="0"></div>
+        <div class="wizard__step" data-step="1"></div>
+        <div class="wizard__step" data-step="2"></div>
+      </div>
+    </div>
+    <div class="wizard__body" id="wizardBody"></div>
+    <div class="wizard__footer">
+      <span class="wizard__skip" id="wizardSkip">Skip setup</span>
+      <button class="wizard__next" id="wizardNext">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ APP ══════ -->
+<div class="app">
+  <div class="titlebar">
+    <div class="titlebar__dots"><span class="titlebar__dot titlebar__dot--r"></span><span class="titlebar__dot titlebar__dot--y"></span><span class="titlebar__dot titlebar__dot--g"></span></div>
+    <span class="titlebar__name">Glossa</span>
+    <button class="titlebar__cc" id="subtitleToggle" title="Subtitles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 12h4"/><path d="M7 16h6"/></svg> CC</button>
+  </div>
+
+  <div class="app-body">
+    <!-- ══════ SIDEBAR ══════ -->
+    <nav class="sidebar">
+      <div class="sidebar__brand">
+        <div class="sidebar__logo"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><path d="M9 10h.01"/><path d="M12 10h.01" opacity=".7"/><path d="M15 10h.01" opacity=".4"/></svg></div>
+        <span class="sidebar__wordmark">Glossa</span>
+      </div>
+      <div class="sidebar__nav">
+        <div class="sidebar__item active" data-nav="home">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span data-i18n="navHome">Home</span>
+        </div>
+        <div class="sidebar__item" data-panel="preferences">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          <span data-i18n="navPreferences">Settings</span>
+        </div>
+        <div class="sidebar__item" data-panel="history">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span data-i18n="navHistory">History</span>
+        </div>
+        <div class="sidebar__divider"></div>
+        <div class="sidebar__section">Advanced</div>
+        <div class="sidebar__item" data-panel="logs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span data-i18n="navLogs">Event Logs</span>
+        </div>
+      </div>
+      <div class="sidebar__footer">
+        <div class="sidebar__user" data-panel="account">
+          <div class="sidebar__avatar">A</div>
+          <div class="sidebar__user-info">
+            <div class="sidebar__user-name">Alex Tanaka</div>
+            <div class="sidebar__user-plan">142 / 300 min</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ══════ MAIN ══════ -->
+    <div class="main">
+      <div class="stage" id="stage">
+        <!-- Idle -->
+        <div class="idle" id="idleView">
+          <div class="idle__orb" id="idleOrb">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+              <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </div>
+          <div class="idle__title" data-i18n="idleTitle">Ready to translate</div>
+          <div class="idle__desc" data-i18n="idleDesc">Press Start and speak naturally. Glossa will translate your words in real time.</div>
+          <div class="idle__lang-display">
+            <span class="idle__lang-flag" id="myLangFlag">&#127468;&#127463;</span>
+            <span class="idle__lang" id="myLang">English</span>
+            <span class="idle__lang-arrow">&rarr;</span>
+            <span class="idle__lang-flag" id="theirLangFlag">&#127471;&#127477;</span>
+            <span class="idle__lang" id="theirLang">Japanese</span>
+            <span class="idle__lang-edit" id="editLangBtn" data-i18n="change">Change</span>
+          </div>
+          <div class="idle__recent">
+            <div class="idle__recent-label" data-i18n="recentSessions">Recent sessions</div>
+            <div class="idle__recent-list">
+              <span class="idle__recent-item">Team Standup &middot; 32m</span>
+              <span class="idle__recent-item">Tokyo Demo &middot; 48m</span>
+              <span class="idle__recent-item">Onboarding &middot; 1h12m</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conversation -->
+        <div class="conversation" id="convView"></div>
+
+        <!-- Stage Toolbar -->
+        <div class="stage-toolbar" id="stageToolbar">
+          <button class="stage-toolbar__btn" id="toolbarFontUp" title="Larger text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <button class="stage-toolbar__btn" id="toolbarFontDown" title="Smaller text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <button class="stage-toolbar__btn" id="toolbarExport" title="Save transcript"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+          <button class="stage-toolbar__btn" id="toolbarDisplay" title="Display settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg></button>
+          <button class="stage-toolbar__btn" id="toolbarClear" title="Clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+        </div>
+
+        <!-- Mode popover -->
+        <div class="popover" id="modePicker" style="bottom:80px;left:24px;min-width:320px">
+          <div class="popover__title">How are you using Glossa?</div>
+          <div class="popover__subtitle">This sets up your microphone and audio routing</div>
+          <div class="mode-option selected" data-mode="face">
+            <div class="mode-option__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <div><div class="mode-option__label">In person</div><div class="mode-option__desc">Translating while face to face</div></div>
+          </div>
+          <div class="mode-option" data-mode="meeting">
+            <div class="mode-option__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div><div class="mode-option__label">Online meeting</div><div class="mode-option__desc">Zoom, Teams, Meet, etc.</div></div>
+          </div>
+          <div class="mode-option" data-mode="listen">
+            <div class="mode-option__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3z"/><path d="M3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg></div>
+            <div><div class="mode-option__label">Just listening</div><div class="mode-option__desc">Translate what others are saying</div></div>
+          </div>
+          <div class="mode-option" data-mode="both">
+            <div class="mode-option__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
+            <div><div class="mode-option__label">Two-way</div><div class="mode-option__desc">Translate in both directions</div></div>
+          </div>
+        </div>
+
+        <!-- Export popover -->
+        <div class="popover" id="exportPopover" style="top:52px;right:16px;left:auto;min-width:220px">
+          <div class="popover__title" style="margin-bottom:10px">Save transcript</div>
+          <div class="export-option" data-action="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg><span>Copy to clipboard</span></div>
+          <div class="export-option" data-action="txt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Download .txt</span></div>
+          <div class="export-option" data-action="json"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>Download .json</span></div>
+        </div>
+
+        <!-- Display settings popover -->
+        <div class="popover" id="displayPopover" style="top:52px;right:16px;left:auto;min-width:280px">
+          <div class="popover__title" style="margin-bottom:14px">Display settings</div>
+          <div class="display-row">
+            <span class="display-row__label">Showing</span>
+            <div class="segment-control" id="showingSegment">
+              <button class="segment-btn active" data-show="both">Both</button>
+              <button class="segment-btn" data-show="source">Source</button>
+              <button class="segment-btn" data-show="translation">Translation</button>
+            </div>
+          </div>
+          <div class="display-row" style="margin-top:8px">
+            <span class="display-row__label">Font size</span>
+            <div class="slider-row">
+              <input type="range" min="11" max="22" value="15" id="fontSlider">
+              <span class="slider-row__val" id="fontSliderVal">15</span>
+            </div>
+          </div>
+          <div class="display-row" style="margin-top:4px">
+            <span class="display-row__label">Compact mode</span>
+            <div class="toggle" data-toggle="compact"></div>
+          </div>
+          <div class="display-row" style="margin-top:4px">
+            <span class="display-row__label">Highlight new text</span>
+            <div class="toggle on" data-toggle="highlight"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transport Bar -->
+      <div class="transport">
+        <div class="transport__lang" id="transportLangBtn">
+          <span class="transport__lang-flag">&#127468;&#127463;</span>
+          <span id="transportMyLang">English</span>
+          <span class="transport__lang-arrow">&rarr;</span>
+          <span class="transport__lang-flag">&#127471;&#127477;</span>
+          <span id="transportTheirLang">Japanese</span>
+        </div>
+        <div class="transport__meter">
+          <span class="transport__meter-label" data-i18n="you">You</span>
+          <div class="meter"><div class="meter__fill meter__fill--speaker" id="meterSpeaker"></div></div>
+        </div>
+        <div class="transport__center">
+          <span class="transport__timer" id="sessionTimer">00:00</span>
+          <button class="transport__btn transport__btn--start" id="sessionBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Start
+          </button>
+        </div>
+        <div class="transport__meter">
+          <div class="meter"><div class="meter__fill meter__fill--trans" id="meterTrans"></div></div>
+          <span class="transport__meter-label" data-i18n="out">Out</span>
+        </div>
+        <div class="transport__status">
+          <span class="transport__dot transport__dot--idle" id="statusDot"></span>
+          <span class="transport__status-label" id="statusLabel">Ready</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrim -->
+    <div class="scrim" id="scrim"></div>
+
+    <!-- ══════ PREFERENCES DRAWER (full settings) ══════ -->
+    <div class="drawer" id="drawer-preferences" style="width:480px">
+      <div class="drawer__header">
+        <span class="drawer__title" data-i18n="navPreferences">Preferences</span>
+        <button class="drawer__close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="display:flex;border-bottom:1px solid var(--border);padding:0 22px;gap:0">
+        <button class="form-btn pref-tab active" data-pref-tab="setup" style="border-bottom:2px solid var(--accent);color:var(--accent);border-radius:0;padding:11px 16px;font-size:13px">Setup</button>
+        <button class="form-btn pref-tab" data-pref-tab="advanced" style="border-bottom:2px solid transparent;color:var(--muted);border-radius:0;padding:11px 16px;font-size:13px">Advanced</button>
+      </div>
+      <div class="drawer__body">
+
+        <!-- ═══ SETUP TAB ═══ -->
+        <div id="prefTab-setup">
+          <!-- 1. Languages -->
+          <div class="settings-card" id="section-languages">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 4-6 4"/><path d="M19 9l-5 3.5L19 16" opacity=".6"/></svg> <span data-i18n="languages">Languages</span></div>
+            <div class="form-group">
+              <div class="form-label" data-i18n="iSpeak">My language</div>
+              <select class="form-select" id="prefMyLang"><option selected>English</option><option>Japanese</option><option>Chinese</option><option>Korean</option><option>Spanish</option><option>French</option><option>Vietnamese</option><option>German</option><option>Portuguese</option><option>Arabic</option><option>Hindi</option><option>Thai</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label" data-i18n="translateTo">Other's language</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <select class="form-select" id="prefTheirLang" style="flex:1"><option>English</option><option selected>Japanese</option><option>Chinese</option><option>Korean</option><option>Spanish</option><option>French</option><option>Vietnamese</option><option>German</option><option>Portuguese</option><option>Arabic</option><option>Hindi</option><option>Thai</option></select>
+                <button class="form-btn form-btn--ghost" id="swapLangBtn" title="Swap languages" style="padding:9px 10px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></button>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+              <div class="form-label"><span data-i18n="interfaceLang">Interface language</span></div>
+              <div style="font:400 12px/1.5 var(--f-body);color:var(--muted);margin-bottom:10px;padding:8px 12px;background:var(--bg-3);border-radius:var(--r);border-left:3px solid var(--accent)" data-i18n="interfaceLangHint">This changes the language of Glossa's menus and buttons. It does NOT affect which languages you can translate between.</div>
+              <select class="form-select" id="interfaceLangSelect">
+                <option value="en" selected>English</option>
+                <option value="ja">Japanese (&#26085;&#26412;&#35486;)</option>
+                <option value="zh">Chinese Simplified (&#31616;&#20307;&#20013;&#25991;)</option>
+                <option value="ko">Korean (&#54620;&#44397;&#50612;)</option>
+                <option value="es">Spanish (Espa&#241;ol)</option>
+                <option value="fr">French (Fran&#231;ais)</option>
+                <option value="vi">Vietnamese (Ti&#7871;ng Vi&#7879;t)</option>
+                <option value="th">Thai (&#3616;&#3634;&#3625;&#3634;&#3652;&#3607;&#3618;)</option>
+              </select>
+            </div>
+          </div>
+          <!-- 2. Audio -->
+          <div class="settings-card" id="section-audio">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> <span data-i18n="microphone">Audio</span></div>
+            <div class="form-group">
+              <div class="form-label">Microphone</div>
+              <select class="form-select"><option>MacBook Pro Microphone</option><option>External USB Mic</option><option>AirPods Pro</option></select>
+            </div>
+            <div class="form-row">
+              <div><div class="form-row__label">Mute</div></div>
+              <div class="toggle" data-toggle="mute"></div>
+            </div>
+            <div style="margin-top:8px;font:400 11px/1 var(--f-body);color:var(--amber);background:var(--amber-soft);padding:6px 10px;border-radius:var(--r);display:none" id="virtualMicWarning">&#9888; Virtual microphone selected &mdash; may cause echo</div>
+            <div class="form-group" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+              <div class="form-label">Speaker Monitor</div>
+              <select class="form-select"><option>MacBook Pro Speakers</option><option>External Monitor</option><option>AirPods Pro</option></select>
+            </div>
+            <div class="form-row">
+              <div><div class="form-row__label">Participant Audio</div><div class="form-row__sub">Capture audio from meetings (requires screen recording permission)</div></div>
+              <div class="toggle on" data-toggle="sysAudio"></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-row__label">Voice Passthrough</div><div class="form-row__sub">Route your voice to the output device</div></div>
+              <div class="toggle" data-toggle="passthrough"></div>
+            </div>
+            <div class="form-group" style="margin-top:10px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font:400 12px/1 var(--f-body);color:var(--ink-3)">Passthrough Volume</span><span style="font:400 11px/1 var(--f-mono);color:var(--muted)">30%</span></div>
+              <input type="range" min="0" max="60" value="30" style="width:100%;accent-color:var(--accent)">
+            </div>
+            <div class="form-group" style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+              <div class="form-label" data-i18n="reduceNoise">Noise Suppression</div>
+              <div class="segment-control" id="noiseSuppressionSegment" style="width:100%">
+                <button class="segment-btn" style="flex:1;text-align:center">Off</button>
+                <button class="segment-btn active" style="flex:1;text-align:center">Standard</button>
+                <button class="segment-btn" style="flex:1;text-align:center">Enhanced</button>
+              </div>
+            </div>
+          </div>
+          <!-- 3. Output -->
+          <div class="settings-card" id="section-output">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg> <span data-i18n="output">Output</span></div>
+            <div class="form-row">
+              <div><div class="form-row__label">Text only</div><div class="form-row__sub">Disable audio playback entirely</div></div>
+              <div class="toggle" data-toggle="textOnly"></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-row__label" data-i18n="playTranslated">Play translated audio</div><div class="form-row__sub" data-i18n="playTranslatedSub">Hear translations spoken aloud</div></div>
+              <div class="toggle on" data-toggle="playAudio"></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-row__label">Play original audio</div><div class="form-row__sub">Hear the source speech</div></div>
+              <div class="toggle" data-toggle="playOriginal"></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-row__label" data-i18n="saveRecordings">Keep audio for replay</div><div class="form-row__sub" data-i18n="saveRecordingsSub">Store audio with transcript</div></div>
+              <div class="toggle on" data-toggle="saveRec"></div>
+            </div>
+            <div class="form-row">
+              <div><div class="form-row__label">Save meetings</div><div class="form-row__sub">Save session transcripts to your account</div></div>
+              <div class="toggle on" data-toggle="saveMeetings"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ ADVANCED TAB ═══ -->
+        <div id="prefTab-advanced" class="hidden">
+          <div class="advanced-info-banner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>These settings are for power users. The defaults work well for most people.</span>
+          </div>
+          <!-- 1. AI Service Provider -->
+          <div class="settings-card" id="section-provider">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg> AI Service Provider</div>
+            <select class="form-select" id="providerSelect" style="margin-bottom:12px">
+              <option value="glossa" selected>Glossa Cloud (recommended)</option>
+              <option value="openai">OpenAI GPT-4o Realtime</option>
+              <option value="gemini">Google Gemini</option>
+              <option value="volcST">Volcengine ST</option>
+              <option value="volcAST2">Volcengine AST2</option>
+              <option value="soniox">Soniox</option>
+              <option value="zoom">Zoom AI</option>
+              <option value="palabra">Palabra AI</option>
+              <option value="local">Local Inference (WASM, offline)</option>
+              <option value="native">Local Native (GPU sidecar)</option>
+            </select>
+            <!-- API Key (shown for non-cloud/non-local) -->
+            <div class="form-group" id="advApiKey" style="display:none">
+              <div class="form-label">API Key</div>
+              <div style="display:flex;gap:8px"><input class="form-input" type="password" placeholder="sk-..." style="flex:1"><button class="form-btn form-btn--primary">Validate</button></div>
+            </div>
+            <!-- Dual-key auth (Volcengine ST, Zoom) -->
+            <div class="form-group" id="dualKeyGroup" style="display:none">
+              <div class="form-label">Key ID / App ID</div>
+              <input class="form-input" type="text" placeholder="Key ID..." style="margin-bottom:8px">
+              <div class="form-label">Secret / Token</div>
+              <input class="form-input" type="password" placeholder="Secret...">
+            </div>
+            <!-- Client creds (Palabra) -->
+            <div class="form-group" id="clientCredsGroup" style="display:none">
+              <div class="form-label">Client ID</div>
+              <input class="form-input" type="text" placeholder="Client ID..." style="margin-bottom:8px">
+              <div class="form-label">Client Secret</div>
+              <input class="form-input" type="password" placeholder="Secret...">
+            </div>
+            <div style="margin-top:8px"><a href="#" class="advanced-link" onclick="event.preventDefault()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Setup guide</a></div>
+          </div>
+          <!-- 2. System Instructions -->
+          <div class="settings-card" id="section-instructions">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> System Instructions</div>
+            <div class="form-group">
+              <div class="segment-control" id="instrModeSegment" style="margin-bottom:10px">
+                <button class="segment-btn active" style="flex:1;text-align:center">Simple</button>
+                <button class="segment-btn" style="flex:1;text-align:center">Advanced</button>
+              </div>
+              <textarea class="form-input" rows="3" placeholder="Custom instructions for the translation model..." style="resize:vertical"></textarea>
+            </div>
+          </div>
+          <!-- 3. Voice & Model -->
+          <div class="settings-card" id="section-voice-model">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/></svg> Voice &amp; Model</div>
+            <div class="form-group">
+              <div class="form-label">Voice</div>
+              <select class="form-select"><option selected>Alloy</option><option>Echo</option><option>Fable</option><option>Onyx</option><option>Nova</option><option>Shimmer</option><option>Custom voice library...</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">ASR Model</div>
+              <select class="form-select"><option selected>Default</option><option>whisper-1</option><option>whisper-large-v3</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Translation Model</div>
+              <select class="form-select"><option selected>Default</option><option>gpt-4o</option><option>gpt-4o-mini</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">TTS Model</div>
+              <select class="form-select"><option selected>Default</option><option>tts-1</option><option>tts-1-hd</option></select>
+            </div>
+          </div>
+          <!-- 4. Speech Mode -->
+          <div class="settings-card" id="section-speech-mode">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg> Speech Mode</div>
+            <div class="form-group">
+              <div class="segment-control" id="speechModeSegment" style="width:100%">
+                <button class="segment-btn active" style="flex:1;text-align:center;font-size:11px">Normal</button>
+                <button class="segment-btn" style="flex:1;text-align:center;font-size:11px">Semantic VAD</button>
+                <button class="segment-btn" style="flex:1;text-align:center;font-size:11px">Push-to-Talk</button>
+                <button class="segment-btn" style="flex:1;text-align:center;font-size:11px">Push-to-Translate</button>
+              </div>
+            </div>
+            <div id="vadSliders">
+              <div class="form-group">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="form-label" style="margin:0">VAD Threshold</div><span style="font:400 11px/1 var(--f-mono);color:var(--muted)">0.5</span></div>
+                <input type="range" min="0" max="1" step="0.05" value="0.5" style="width:100%;accent-color:var(--accent)">
+              </div>
+              <div class="form-group">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="form-label" style="margin:0">Prefix Padding (ms)</div><span style="font:400 11px/1 var(--f-mono);color:var(--muted)">300</span></div>
+                <input type="range" min="0" max="1000" step="50" value="300" style="width:100%;accent-color:var(--accent)">
+              </div>
+              <div class="form-group">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="form-label" style="margin:0">Silence Duration (ms)</div><span style="font:400 11px/1 var(--f-mono);color:var(--muted)">500</span></div>
+                <input type="range" min="100" max="2000" step="50" value="500" style="width:100%;accent-color:var(--accent)">
+              </div>
+              <div class="form-group">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="form-label" style="margin:0">Min Speech (ms)</div><span style="font:400 11px/1 var(--f-mono);color:var(--muted)">200</span></div>
+                <input type="range" min="50" max="1000" step="50" value="200" style="width:100%;accent-color:var(--accent)">
+              </div>
+            </div>
+          </div>
+          <!-- 5. Model Configuration -->
+          <div class="settings-card" id="section-model-config">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg> Model Configuration</div>
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="form-label" style="margin:0">TTS Speed</div><span style="font:400 11px/1 var(--f-mono);color:var(--muted)">1.0x</span></div>
+              <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" style="width:100%;accent-color:var(--accent)">
+            </div>
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><div class="form-label" style="margin:0">Temperature</div><span style="font:400 11px/1 var(--f-mono);color:var(--muted)">0.8</span></div>
+              <input type="range" min="0" max="2" step="0.1" value="0.8" style="width:100%;accent-color:var(--accent)">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Max Tokens</div>
+              <input class="form-input" type="number" value="4096" style="width:120px">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Noise reduction</div>
+              <select class="form-select"><option>Off</option><option selected>Standard</option><option>Enhanced</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Connection Type</div>
+              <div class="segment-control" id="connectionTypeSegment" style="width:100%">
+                <button class="segment-btn active" style="flex:1;text-align:center">WebSocket</button>
+                <button class="segment-btn" style="flex:1;text-align:center">WebRTC</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Reasoning effort</div>
+              <select class="form-select"><option>Low</option><option selected>Medium</option><option>High</option></select>
+            </div>
+          </div>
+          <!-- 6. AI Summary Service -->
+          <div class="settings-card" id="section-summary">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> AI Summary Service</div>
+            <div class="form-group">
+              <div class="form-label">Provider</div>
+              <select class="form-select" id="summaryProvider"><option selected>OpenAI</option><option>Google Gemini</option><option>Custom endpoint</option></select>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Model</div>
+              <select class="form-select"><option selected>gpt-4o</option><option>gpt-4o-mini</option><option>gpt-3.5-turbo</option></select>
+            </div>
+            <div class="form-group" id="summaryApiKeyGroup">
+              <div class="form-label">API Key</div>
+              <div style="display:flex;gap:8px"><input class="form-input" type="password" placeholder="sk-..." style="flex:1"><button class="form-btn form-btn--primary">Validate</button></div>
+            </div>
+          </div>
+          <!-- 7. Virtual Audio -->
+          <div class="settings-card" id="section-virtual-audio">
+            <div class="settings-card__title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Virtual Audio</div>
+            <div class="form-row">
+              <div><div class="form-row__label">GlossaVirtualAudio</div><div class="form-row__sub">HAL plugin for meeting apps</div></div>
+              <span style="font:500 11px/1 var(--f-body);color:var(--success);background:var(--success-soft);padding:4px 10px;border-radius:var(--r-pill)">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ HISTORY DRAWER ══════ -->
+    <div class="drawer" id="drawer-history">
+      <div class="drawer__header">
+        <span class="drawer__title" data-i18n="navHistory">History</span>
+        <button class="drawer__close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="drawer__body" id="historyBody"></div>
+    </div>
+
+    <!-- ══════ LOGS DRAWER ══════ -->
+    <div class="drawer" id="drawer-logs" style="width:50vw">
+      <div class="drawer__header">
+        <span class="drawer__title" data-i18n="navLogs">Event Logs</span>
+        <button class="drawer__close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="display:flex;border-bottom:1px solid var(--border);padding:0 22px;gap:0">
+        <button class="form-btn" id="logsTabSpeaker" style="border-bottom:2px solid var(--accent);color:var(--accent);border-radius:0;padding:10px 14px;font-size:12.5px">Speaker</button>
+        <button class="form-btn" id="logsTabParticipant" style="border-bottom:2px solid transparent;color:var(--muted);border-radius:0;padding:10px 14px;font-size:12.5px">Participant</button>
+        <span style="flex:1"></span>
+        <button class="form-btn form-btn--ghost" id="logsCopy" style="font-size:11px;padding:6px 10px;margin:4px 0">Copy</button>
+        <button class="form-btn form-btn--ghost" id="logsClear" style="font-size:11px;padding:6px 10px;margin:4px 0 4px 4px">Clear</button>
+      </div>
+      <div class="drawer__body" id="logsBody"></div>
+    </div>
+
+    <!-- ══════ ACCOUNT DRAWER ══════ -->
+    <div class="drawer" id="drawer-account">
+      <div class="drawer__header">
+        <span class="drawer__title">Profile</span>
+        <button class="drawer__close" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="drawer__body" style="padding:0">
+        <!-- Profile header -->
+        <div style="padding:32px 24px 24px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.06) 0%,transparent 100%)">
+          <div class="account-card__avatar" style="margin:0 auto 14px">A</div>
+          <div class="account-card__name">Alex Tanaka</div>
+          <div class="account-card__email">alex.tanaka@company.com</div>
+        </div>
+
+        <div style="padding:0 22px 22px">
+          <!-- Usage -->
+          <div style="padding:16px 18px;background:var(--bg-3);border-radius:var(--r-lg);margin-bottom:20px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <span style="font:500 13px/1 var(--f-body);color:var(--ink)">Usage this month</span>
+              <span style="font:500 13px/1 var(--f-mono);color:var(--accent)">142 / 300 min</span>
+            </div>
+            <div class="quota-bar__track"><div class="quota-bar__fill" style="width:47%"></div></div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px">
+              <span style="font:400 11px/1 var(--f-mono);color:var(--muted)">47% used</span>
+              <span style="font:400 11px/1 var(--f-mono);color:var(--muted)">Resets Oct 1</span>
+            </div>
+          </div>
+
+          <button class="form-btn form-btn--primary upgrade-btn" style="width:100%;justify-content:center;padding:13px;font-size:14px;margin-bottom:20px">Upgrade to Premium</button>
+
+          <!-- Theme -->
+          <div style="margin-bottom:20px" id="section-appearance">
+            <div style="font:500 13px/1 var(--f-body);color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+              Theme
+            </div>
+            <div class="segment-control" id="themeSegment" style="width:100%">
+              <button class="segment-btn active" data-theme-val="light" style="flex:1;text-align:center">Light</button>
+              <button class="segment-btn" data-theme-val="dark" style="flex:1;text-align:center">Dark</button>
+              <button class="segment-btn" data-theme-val="system" style="flex:1;text-align:center">System</button>
+            </div>
+          </div>
+
+          <!-- Help & Support -->
+          <div id="section-help">
+            <div style="font:500 13px/1 var(--f-body);color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Help &amp; Support
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+              <button class="form-btn form-btn--ghost" id="supportLink" style="justify-content:center;padding:10px;font-size:12.5px;border-radius:var(--r)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:4px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>
+                Support
+              </button>
+              <button class="form-btn form-btn--ghost" id="docsLink" style="justify-content:center;padding:10px;font-size:12.5px;border-radius:var(--r)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:4px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                Docs
+              </button>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;font:400 13px/1 var(--f-body);color:var(--ink-3)">
+              <span>Version</span>
+              <span style="font:400 12px/1 var(--f-mono);color:var(--muted)">1.0.0-glossa</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border)">
+              <span style="font:400 13px/1 var(--f-body);color:var(--ink-3)">Onboarding tour</span>
+              <button class="form-btn form-btn--ghost" id="restartTutorial" style="font-size:11.5px;padding:5px 12px">Restart</button>
+            </div>
+          </div>
+
+          <!-- Sign out -->
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);text-align:center">
+            <button class="form-btn form-btn--ghost" style="color:var(--danger);font-size:13px">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═══════ STATE ═══════ */
+  var state = {
+    session: 'idle',
+    activeDrawer: null,
+    activePopover: null,
+    mode: 'face',
+    timerSec: 0,
+    timerInterval: null,
+    convIndex: 0,
+    convInterval: null,
+    meterInterval: null,
+    fontSize: 15,
+    wizardStep: 0,
+    myLang: 'English',
+    theirLang: 'Japanese',
+    theme: 'light'
+  };
+
+  /* ═══════ MOCK DATA ═══════ */
+  var mockConv = [
+    {src:"Hello everyone, thank you for joining today's meeting.",trans:"\u7686\u3055\u3093\u3001\u3053\u3093\u306b\u3061\u306f\u3002\u672c\u65e5\u306e\u4f1a\u8b70\u306b\u3054\u53c2\u52a0\u3044\u305f\u3060\u304d\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002",latency:287},
+    {src:"Let's start with the quarterly results. Revenue is up twelve percent.",trans:"\u56db\u534a\u671f\u306e\u7d50\u679c\u304b\u3089\u59cb\u3081\u307e\u3057\u3087\u3046\u3002\u58f2\u4e0a\u306f12\u30d1\u30fc\u30bb\u30f3\u30c8\u5897\u52a0\u3057\u307e\u3057\u305f\u3002",latency:312},
+    {src:"The new translation feature has been very well received by our customers.",trans:"\u65b0\u3057\u3044\u7ffb\u8a33\u6a5f\u80fd\u306f\u304a\u5ba2\u69d8\u306b\u975e\u5e38\u306b\u597d\u8a55\u3067\u3059\u3002",latency:256},
+    {src:"We're planning to expand to five more languages next quarter.",trans:"\u6765\u56db\u534a\u671f\u306b\u306f\u3055\u3089\u306b5\u3064\u306e\u8a00\u8a9e\u3092\u8ffd\u52a0\u3059\u308b\u4e88\u5b9a\u3067\u3059\u3002",latency:298},
+    {src:"Are there any questions about the roadmap?",trans:"\u30ed\u30fc\u30c9\u30de\u30c3\u30d7\u306b\u3064\u3044\u3066\u8cea\u554f\u306f\u3042\u308a\u307e\u3059\u304b\uff1f",latency:198},
+    {src:"The desktop app will get a complete visual refresh with the Glossa rebrand.",trans:"\u30c7\u30b9\u30af\u30c8\u30c3\u30d7\u30a2\u30d7\u30ea\u306fGlossa\u30ea\u30d6\u30e9\u30f3\u30c9\u3067\u5b8c\u5168\u306a\u30d3\u30b8\u30e5\u30a2\u30eb\u30ea\u30d5\u30ec\u30c3\u30b7\u30e5\u3092\u53d7\u3051\u307e\u3059\u3002",latency:341},
+    {src:"Thank you all. Let's continue this discussion next week.",trans:"\u7686\u3055\u3093\u3001\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3057\u305f\u3002\u6765\u9031\u3082\u3053\u306e\u8b70\u8ad6\u3092\u7d9a\u3051\u307e\u3057\u3087\u3046\u3002",latency:265}
+  ];
+
+  var mockLogs = [
+    {dir:'up',time:'14:32:01.120',event:'session.create',tag:'speaker'},
+    {dir:'down',time:'14:32:01.340',event:'session.created',tag:'server'},
+    {dir:'up',time:'14:32:02.015',event:'audio.start',tag:'speaker'},
+    {dir:'down',time:'14:32:02.187',event:'audio.ack',tag:'server'},
+    {dir:'up',time:'14:32:03.442',event:'input_audio_buffer.append',tag:'speaker'},
+    {dir:'up',time:'14:32:03.891',event:'input_audio_buffer.append',tag:'speaker'},
+    {dir:'up',time:'14:32:04.310',event:'input_audio_buffer.append',tag:'speaker'},
+    {dir:'down',time:'14:32:04.672',event:'response.audio_transcript.delta',tag:'server'},
+    {dir:'down',time:'14:32:04.891',event:'response.audio.delta',tag:'server'},
+    {dir:'down',time:'14:32:05.120',event:'response.audio_transcript.done',tag:'server'},
+    {dir:'down',time:'14:32:05.340',event:'conversation.item.created',tag:'server'},
+    {dir:'down',time:'14:32:05.512',event:'response.done',tag:'server'},
+    {dir:'up',time:'14:32:07.801',event:'session.update',tag:'speaker'},
+    {dir:'down',time:'14:32:07.990',event:'rate_limits.updated',tag:'server'},
+    {dir:'up',time:'14:32:09.115',event:'input_audio_buffer.append',tag:'speaker'},
+    {dir:'down',time:'14:32:09.650',event:'response.audio_transcript.delta',tag:'server'},
+    {dir:'down',time:'14:32:09.882',event:'response.audio.delta',tag:'server'}
+  ];
+
+  var historyItems = [
+    {title:'Product Team Weekly Standup', date:'Sep 4', duration:'32 min'},
+    {title:'Client Demo \u2014 Tokyo Office', date:'Sep 3', duration:'48 min'},
+    {title:'Onboarding: New Hire Orientation', date:'Sep 2', duration:'1h 12m'},
+    {title:'Cross-team Sync (EN/JP)', date:'Sep 1', duration:'25 min'},
+    {title:'Partner Call \u2014 Osaka', date:'Aug 30', duration:'1h 05m'}
+  ];
+
+  var langFlags = {
+    'English':'&#127468;&#127463;','Japanese':'&#127471;&#127477;','Chinese':'&#127464;&#127475;',
+    'Korean':'&#127472;&#127479;','Spanish':'&#127466;&#127480;','French':'&#127467;&#127479;',
+    'Vietnamese':'&#127483;&#127475;','German':'&#127465;&#127466;'
+  };
+
+  /* ═══════ HELPERS ═══════ */
+  var $ = function(s){return document.querySelector(s)};
+  var $$ = function(s){return document.querySelectorAll(s)};
+
+  function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+  function nowTime(){var d=new Date();return [d.getHours(),d.getMinutes(),d.getSeconds()].map(function(v){return String(v).padStart(2,'0')}).join(':')}
+
+  var toastIcons = {
+    success:'<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:'<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    info:'<svg class="toast__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+  };
+
+  function showToast(msg,type){
+    var t = document.createElement('div');
+    t.className = 'toast toast--'+(type||'info');
+    t.innerHTML = (toastIcons[type||'info']||'') + '<span>' + msg + '</span>';
+    $('#toastContainer').appendChild(t);
+    setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(8px)';t.style.transition='all .3s'},2800);
+    setTimeout(function(){t.remove()},3100);
+  }
+
+  function updateLangDisplay(){
+    $('#myLang').textContent = state.myLang;
+    $('#theirLang').textContent = state.theirLang;
+    $('#transportMyLang').textContent = state.myLang;
+    $('#transportTheirLang').textContent = state.theirLang;
+    var flags = $('#transportLangBtn').querySelectorAll('.transport__lang-flag');
+    if(flags[0]) flags[0].innerHTML = langFlags[state.myLang] || '';
+    if(flags[1]) flags[1].innerHTML = langFlags[state.theirLang] || '';
+    var myFlag = $('#myLangFlag');
+    var theirFlag = $('#theirLangFlag');
+    if(myFlag) myFlag.innerHTML = langFlags[state.myLang] || '';
+    if(theirFlag) theirFlag.innerHTML = langFlags[state.theirLang] || '';
+  }
+
+  /* ═══════ THEME TOGGLE ═══════ */
+  function setTheme(theme){
+    state.theme = theme;
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+
+
+  /* ═══════ POPULATE HISTORY ═══════ */
+  function renderHistory(){
+    var body = $('#historyBody');
+    var calSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+    var clockSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+    body.innerHTML = historyItems.map(function(h){
+      return '<div class="history-item"><div class="history-item__title">'+h.title+'</div><div class="history-item__meta"><span>'+calSvg+' '+h.date+'</span><span>'+clockSvg+' '+h.duration+'</span></div></div>';
+    }).join('');
+  }
+  renderHistory();
+
+  /* ═══════ POPULATE LOGS (pre-populated) ═══════ */
+  function renderLogs(){
+    var body = $('#logsBody');
+    body.innerHTML = mockLogs.map(function(log){
+      var arrowClass = log.dir === 'up' ? 'log-entry__arrow--up' : 'log-entry__arrow--down';
+      var arrow = log.dir === 'up' ? '\u2191' : '\u2193';
+      return '<div class="log-entry"><span class="log-entry__arrow '+arrowClass+'">'+arrow+'</span><span class="log-entry__time">'+log.time+'</span><span class="log-entry__event">'+log.event+'</span><span class="log-entry__tag">'+log.tag+'</span></div>';
+    }).join('');
+  }
+  renderLogs();
+
+  /* ═══════ WIZARD ═══════ */
+  var wizardSteps = [
+    {title:'Welcome to Glossa',subtitle:"Let's set up your translation in three quick steps",question:'What language do you speak?',type:'lang-grid',key:'myLang'},
+    {title:'Almost there',subtitle:'One more language to pick',question:'What language should we translate to?',type:'lang-grid',key:'theirLang'},
+    {title:'How will you use Glossa?',subtitle:'You can always change this later',question:'',type:'usage'}
+  ];
+
+  function renderWizardStep(){
+    var step = wizardSteps[state.wizardStep];
+    $('#wizardTitle').textContent = step.title;
+    $('#wizardSubtitle').textContent = step.subtitle;
+    $$('.wizard__step').forEach(function(el,i){el.classList.toggle('active',i===state.wizardStep);el.classList.toggle('done',i<state.wizardStep)});
+    var body = $('#wizardBody');
+    if(step.type === 'lang-grid'){
+      var langs = [['English','&#127468;&#127463;'],['Japanese','&#127471;&#127477;'],['Chinese','&#127464;&#127475;'],['Korean','&#127472;&#127479;'],['Spanish','&#127466;&#127480;'],['French','&#127467;&#127479;'],['Vietnamese','&#127483;&#127475;'],['German','&#127465;&#127466;']];
+      var sel = state[step.key];
+      body.innerHTML = '<div class="wizard__question">'+step.question+'</div><div class="wizard__grid">'+langs.map(function(l){
+        return '<div class="wizard__option'+(l[0]===sel?' selected':'')+'" data-wlang="'+l[0]+'" data-wkey="'+step.key+'"><span class="wizard__option-emoji">'+l[1]+'</span><span class="wizard__option-label">'+l[0]+'</span></div>';
+      }).join('')+'</div>';
+      body.querySelectorAll('.wizard__option').forEach(function(o){
+        o.addEventListener('click',function(){
+          body.querySelectorAll('.wizard__option').forEach(function(x){x.classList.remove('selected')});
+          o.classList.add('selected');
+          state[o.dataset.wkey] = o.dataset.wlang;
+        });
+      });
+    } else {
+      var svgFace = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;color:var(--accent)"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>';
+      var svgMeeting = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;color:var(--accent)"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+      var svgListen = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;color:var(--accent)"><path d="M3 18v-6a9 9 0 0118 0v6"/><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3z"/><path d="M3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/></svg>';
+      var svgBoth = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;color:var(--accent)"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>';
+      body.innerHTML = '<div class="wizard__grid"><div class="wizard__option selected" data-wmode="face"><span class="wizard__option-emoji">'+svgFace+'</span><span class="wizard__option-label">In person</span><span class="wizard__option-desc">Face-to-face conversation</span></div><div class="wizard__option" data-wmode="meeting"><span class="wizard__option-emoji">'+svgMeeting+'</span><span class="wizard__option-label">Online meeting</span><span class="wizard__option-desc">Zoom, Teams, Meet</span></div><div class="wizard__option" data-wmode="listen"><span class="wizard__option-emoji">'+svgListen+'</span><span class="wizard__option-label">Just listening</span><span class="wizard__option-desc">Translate others</span></div><div class="wizard__option" data-wmode="both"><span class="wizard__option-emoji">'+svgBoth+'</span><span class="wizard__option-label">Two-way</span><span class="wizard__option-desc">Both directions</span></div></div>';
+      body.querySelectorAll('.wizard__option').forEach(function(o){
+        o.addEventListener('click',function(){
+          body.querySelectorAll('.wizard__option').forEach(function(x){x.classList.remove('selected')});
+          o.classList.add('selected');
+          state.mode = o.dataset.wmode;
+        });
+      });
+    }
+    $('#wizardNext').textContent = state.wizardStep === 2 ? 'Get started' : 'Continue';
+  }
+
+  function closeWizard(){
+    $('#wizardOverlay').classList.add('hidden');
+    updateLangDisplay();
+  }
+
+  $('#wizardNext').addEventListener('click',function(){
+    if(state.wizardStep < 2){state.wizardStep++;renderWizardStep()} else closeWizard();
+  });
+  $('#wizardSkip').addEventListener('click', closeWizard);
+  renderWizardStep();
+
+  /* ═══════ DRAWER ═══════ */
+  function openDrawer(id){
+    closeAllPopovers();
+    if(state.activeDrawer === id){closeDrawer();return}
+    closeDrawer();
+    var el = $('#drawer-'+id);
+    if(!el) return;
+    el.classList.add('open');
+    $('#scrim').classList.add('visible');
+    state.activeDrawer = id;
+    $$('.sidebar__item').forEach(function(b){
+      b.classList.toggle('active', b.dataset.panel===id || (b.dataset.nav==='home'&&!id));
+    });
+  }
+
+  function closeDrawer(){
+    // Close ALL drawers to prevent stacking
+    $$('.drawer').forEach(function(d){d.classList.remove('open')});
+    $('#scrim').classList.remove('visible');
+    state.activeDrawer = null;
+    $$('.sidebar__item').forEach(function(b){b.classList.toggle('active',b.dataset.nav==='home')});
+  }
+
+  function togglePopover(id){
+    var el = $('#'+id);
+    if(state.activePopover === id){closeAllPopovers();return}
+    closeAllPopovers();
+    el.classList.add('visible');
+    state.activePopover = id;
+  }
+
+  function closeAllPopovers(){
+    $$('.popover').forEach(function(p){p.classList.remove('visible')});
+    state.activePopover = null;
+  }
+
+  /* ═══════ SESSION ═══════ */
+  function startSession(){
+    if(state.session !== 'idle') return;
+    state.session = 'initializing';
+    $('#sessionBtn').className = 'transport__btn transport__btn--init';
+    $('#sessionBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" opacity=".3"/><path d="M12 2a10 10 0 019.95 9"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"/></path></svg> Connecting\u2026';
+    $('#statusDot').className = 'transport__dot transport__dot--connecting';
+    $('#statusLabel').textContent = 'Connecting\u2026';
+    setTimeout(function(){
+      state.session = 'live';
+      $('.main').classList.add('main--live');
+      $('#sessionBtn').className = 'transport__btn transport__btn--stop';
+      $('#sessionBtn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1"/></svg> Stop';
+      $('#statusDot').className = 'transport__dot transport__dot--live';
+      $('#statusLabel').textContent = 'Translating';
+      $('#idleView').classList.add('hidden');
+      $('#convView').classList.add('visible');
+      $('#convView').innerHTML = '';
+      $('#stageToolbar').classList.add('visible');
+      state.timerSec = 0;
+      $('#sessionTimer').classList.add('visible');
+      $('#sessionTimer').textContent = '00:00';
+      state.timerInterval = setInterval(function(){state.timerSec++;$('#sessionTimer').textContent=formatTime(state.timerSec)},1000);
+      state.meterInterval = setInterval(function(){
+        $('#meterSpeaker').style.width = (8+Math.random()*55)+'%';
+        $('#meterTrans').style.width = (3+Math.random()*40)+'%';
+      },200);
+      state.convIndex = 0;
+      addConvTurn();
+      state.convInterval = setInterval(function(){
+        state.convIndex++;
+        if(state.convIndex < mockConv.length) addConvTurn();
+        else clearInterval(state.convInterval);
+      },3500);
+    },1600);
+  }
+
+  function endSession(){
+    if(state.session !== 'live') return;
+    state.session = 'idle';
+    $('.main').classList.remove('main--live');
+    $('#sessionBtn').className = 'transport__btn transport__btn--start';
+    $('#sessionBtn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start';
+    $('#statusDot').className = 'transport__dot transport__dot--idle';
+    $('#statusLabel').textContent = 'Ready';
+    $('#sessionTimer').classList.remove('visible');
+    $('#stageToolbar').classList.remove('visible');
+    clearInterval(state.timerInterval);
+    clearInterval(state.convInterval);
+    clearInterval(state.meterInterval);
+    $('#meterSpeaker').style.width = '0';
+    $('#meterTrans').style.width = '0';
+    $('#idleView').classList.remove('hidden');
+    $('#convView').classList.remove('visible');
+    showToast('Session ended \u2014 '+formatTime(state.timerSec),'success');
+  }
+
+  function addConvTurn(){
+    var item = mockConv[state.convIndex];
+    var turn = document.createElement('div');
+    turn.className = 'conv-turn';
+    turn.innerHTML = '<span class="conv-label conv-label--you">You</span><div class="conv-bubble conv-bubble--src">'+item.src+'</div><span class="conv-label conv-label--translation">Translation</span><div class="conv-bubble conv-bubble--trans">'+item.trans+'</div><div class="conv-meta"><span class="conv-meta__play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play</span><span>'+nowTime()+'</span><span>'+item.latency+'ms</span></div>';
+    $('#convView').appendChild(turn);
+    $('#stage').scrollTop = $('#stage').scrollHeight;
+  }
+
+  /* ═══════ i18n ═══════ */
+  var i18n = {
+    en: {
+      navHome:'Home',navPreferences:'Preferences',navHistory:'History',navDeveloper:'Developer',navLogs:'Event Logs',
+      idleTitle:'Ready to translate',idleDesc:'Press Start and speak naturally. Glossa will translate your words in real time.',
+      change:'Change',recentSessions:'Recent sessions',you:'You',out:'Out',
+      languages:'Languages',iSpeak:'I speak',translateTo:'Translate to',
+      microphone:'Microphone',reduceNoise:'Reduce background noise',
+      output:'Output',playTranslated:'Play translated audio',playTranslatedSub:'Hear translations spoken aloud',
+      saveRecordings:'Save recordings',saveRecordingsSub:'Keep audio for replay later',
+      interfaceLang:'Interface language',interfaceLangHint:"This changes the language of Glossa's menus and buttons. It does NOT affect which languages you can translate between.",
+      advancedSettings:'Advanced settings'
+    },
+    ja: {
+      navHome:'\u30DB\u30FC\u30E0',navPreferences:'\u8A2D\u5B9A',navHistory:'\u5C65\u6B74',navDeveloper:'\u958B\u767A\u8005',navLogs:'\u30A4\u30D9\u30F3\u30C8\u30ED\u30B0',
+      idleTitle:'\u7FFB\u8A33\u6E96\u5099\u5B8C\u4E86',idleDesc:'\u30B9\u30BF\u30FC\u30C8\u3092\u62BC\u3057\u3066\u81EA\u7136\u306B\u8A71\u3057\u3066\u304F\u3060\u3055\u3044\u3002Glossa\u304C\u30EA\u30A2\u30EB\u30BF\u30A4\u30E0\u3067\u7FFB\u8A33\u3057\u307E\u3059\u3002',
+      change:'\u5909\u66F4',recentSessions:'\u6700\u8FD1\u306E\u30BB\u30C3\u30B7\u30E7\u30F3',you:'\u81EA\u5206',out:'\u51FA\u529B',
+      languages:'\u8A00\u8A9E',iSpeak:'\u8A71\u3059\u8A00\u8A9E',translateTo:'\u7FFB\u8A33\u5148',
+      microphone:'\u30DE\u30A4\u30AF',reduceNoise:'\u30CE\u30A4\u30BA\u4F4E\u6E1B',
+      output:'\u51FA\u529B',playTranslated:'\u7FFB\u8A33\u97F3\u58F0\u3092\u518D\u751F',playTranslatedSub:'\u7FFB\u8A33\u3092\u97F3\u58F0\u3067\u8074\u304F',
+      saveRecordings:'\u9332\u97F3\u3092\u4FDD\u5B58',saveRecordingsSub:'\u5F8C\u3067\u518D\u751F\u3067\u304D\u308B\u3088\u3046\u306B\u4FDD\u5B58',
+      interfaceLang:'\u30A4\u30F3\u30BF\u30FC\u30D5\u30A7\u30FC\u30B9\u8A00\u8A9E',interfaceLangHint:'Glossa\u306E\u30E1\u30CB\u30E5\u30FC\u3084\u30DC\u30BF\u30F3\u306E\u8A00\u8A9E\u3092\u5909\u66F4\u3057\u307E\u3059\u3002\u7FFB\u8A33\u53EF\u80FD\u306A\u8A00\u8A9E\u306B\u306F\u5F71\u97FF\u3057\u307E\u305B\u3093\u3002',
+      advancedSettings:'\u8A73\u7D30\u8A2D\u5B9A'
+    },
+    vi: {
+      navHome:'Trang ch\u1EE7',navPreferences:'C\u00E0i \u0111\u1EB7t',navHistory:'L\u1ECBch s\u1EED',navDeveloper:'Nh\u00E0 ph\u00E1t tri\u1EC3n',navLogs:'Nh\u1EADt k\u00FD s\u1EF1 ki\u1EC7n',
+      idleTitle:'S\u1EB5n s\u00E0ng d\u1ECBch',idleDesc:'Nh\u1EA5n B\u1EAFt \u0111\u1EA7u v\u00E0 n\u00F3i t\u1EF1 nhi\u00EAn. Glossa s\u1EBD d\u1ECBch l\u1EDDi c\u1EE7a b\u1EA1n theo th\u1EDDi gian th\u1EF1c.',
+      change:'Thay \u0111\u1ED5i',recentSessions:'Phi\u00EAn g\u1EA7n \u0111\u00E2y',you:'B\u1EA1n',out:'\u0110\u1EA7u ra',
+      languages:'Ng\u00F4n ng\u1EEF',iSpeak:'T\u00F4i n\u00F3i',translateTo:'D\u1ECBch sang',
+      microphone:'Micro',reduceNoise:'Gi\u1EA3m ti\u1EBFng \u1ED3n n\u1EC1n',
+      output:'\u0110\u1EA7u ra',playTranslated:'Ph\u00E1t \u00E2m thanh d\u1ECBch',playTranslatedSub:'Nghe b\u1EA3n d\u1ECBch \u0111\u01B0\u1EE3c \u0111\u1ECDc l\u00EAn',
+      saveRecordings:'L\u01B0u b\u1EA3n ghi',saveRecordingsSub:'Gi\u1EEF l\u1EA1i \u00E2m thanh \u0111\u1EC3 nghe l\u1EA1i',
+      interfaceLang:'Ng\u00F4n ng\u1EEF giao di\u1EC7n',interfaceLangHint:'Thay \u0111\u1ED5i ng\u00F4n ng\u1EEF c\u1EE7a menu v\u00E0 n\u00FAt trong Glossa. KHNG \u1EA3nh h\u01B0\u1EDFng \u0111\u1EBFn ng\u00F4n ng\u1EEF d\u1ECBch.',
+      advancedSettings:'C\u00E0i \u0111\u1EB7t n\u00E2ng cao'
+    },
+    zh: {
+      navHome:'\u9996\u9875',navPreferences:'\u8BBE\u7F6E',navHistory:'\u5386\u53F2',navDeveloper:'\u5F00\u53D1\u8005',navLogs:'\u4E8B\u4EF6\u65E5\u5FD7',
+      idleTitle:'\u51C6\u5907\u7FFB\u8BD1',idleDesc:'\u70B9\u51FB\u5F00\u59CB\u5E76\u81EA\u7136\u8BF4\u8BDD\u3002Glossa\u5C06\u5B9E\u65F6\u7FFB\u8BD1\u60A8\u7684\u8BDD\u8BED\u3002',
+      change:'\u66F4\u6539',recentSessions:'\u6700\u8FD1\u4F1A\u8BDD',you:'\u6211',out:'\u8F93\u51FA',
+      languages:'\u8BED\u8A00',iSpeak:'\u6211\u8BF4',translateTo:'\u7FFB\u8BD1\u4E3A',
+      microphone:'\u9EA6\u514B\u98CE',reduceNoise:'\u964D\u4F4E\u80CC\u666F\u566A\u97F3',
+      output:'\u8F93\u51FA',playTranslated:'\u64AD\u653E\u7FFB\u8BD1\u97F3\u9891',playTranslatedSub:'\u542C\u53D6\u7FFB\u8BD1\u7684\u8BED\u97F3',
+      saveRecordings:'\u4FDD\u5B58\u5F55\u97F3',saveRecordingsSub:'\u4FDD\u7559\u97F3\u9891\u4EE5\u4FBF\u7A0D\u540E\u56DE\u653E',
+      interfaceLang:'\u754C\u9762\u8BED\u8A00',interfaceLangHint:'\u66F4\u6539Glossa\u83DC\u5355\u548C\u6309\u94AE\u7684\u8BED\u8A00\u3002\u4E0D\u5F71\u54CD\u53EF\u7FFB\u8BD1\u7684\u8BED\u8A00\u3002',
+      advancedSettings:'\u9AD8\u7EA7\u8BBE\u7F6E'
+    },
+    ko: {
+      navHome:'\uD648',navPreferences:'\uC124\uC815',navHistory:'\uAE30\uB85D',navDeveloper:'\uAC1C\uBC1C\uC790',navLogs:'\uC774\uBCA4\uD2B8 \uB85C\uADF8',
+      idleTitle:'\uBC88\uC5ED \uC900\uBE44 \uC644\uB8CC',idleDesc:'\uC2DC\uC791\uC744 \uB204\uB974\uACE0 \uC790\uC5F0\uC2A4\uB7FD\uAC8C \uB9D0\uD558\uC138\uC694. Glossa\uAC00 \uC2E4\uC2DC\uAC04\uC73C\uB85C \uBC88\uC5ED\uD569\uB2C8\uB2E4.',
+      change:'\uBCC0\uACBD',recentSessions:'\uCD5C\uADFC \uC138\uC158',you:'\uB098',out:'\uCD9C\uB825',
+      languages:'\uC5B8\uC5B4',iSpeak:'\uB0B4 \uC5B8\uC5B4',translateTo:'\uBC88\uC5ED \uB300\uC0C1',
+      microphone:'\uB9C8\uC774\uD06C',reduceNoise:'\uBC30\uACBD \uC18C\uC74C \uC904\uC774\uAE30',
+      output:'\uCD9C\uB825',playTranslated:'\uBC88\uC5ED \uC74C\uC131 \uC7AC\uC0DD',playTranslatedSub:'\uBC88\uC5ED\uC744 \uC74C\uC131\uC73C\uB85C \uB4E4\uAE30',
+      saveRecordings:'\uB179\uC74C \uC800\uC7A5',saveRecordingsSub:'\uB098\uC911\uC5D0 \uB2E4\uC2DC \uB4E4\uC744 \uC218 \uC788\uB3C4\uB85D \uC800\uC7A5',
+      interfaceLang:'\uC778\uD130\uD398\uC774\uC2A4 \uC5B8\uC5B4',interfaceLangHint:'Glossa\uC758 \uBA54\uB274\uC640 \uBC84\uD2BC \uC5B8\uC5B4\uB97C \uBCC0\uACBD\uD569\uB2C8\uB2E4. \uBC88\uC5ED \uAC00\uB2A5\uD55C \uC5B8\uC5B4\uC5D0\uB294 \uC601\uD5A5\uC744 \uBBF8\uCE58\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.',
+      advancedSettings:'\uACE0\uAE09 \uC124\uC815'
+    },
+    es: {
+      navHome:'Inicio',navPreferences:'Preferencias',navHistory:'Historial',navDeveloper:'Desarrollador',navLogs:'Registros',
+      idleTitle:'Listo para traducir',idleDesc:'Presiona Iniciar y habla con naturalidad. Glossa traducir\u00E1 tus palabras en tiempo real.',
+      change:'Cambiar',recentSessions:'Sesiones recientes',you:'T\u00FA',out:'Salida',
+      languages:'Idiomas',iSpeak:'Yo hablo',translateTo:'Traducir a',
+      microphone:'Micr\u00F3fono',reduceNoise:'Reducir ruido de fondo',
+      output:'Salida',playTranslated:'Reproducir audio traducido',playTranslatedSub:'Escuchar las traducciones en voz alta',
+      saveRecordings:'Guardar grabaciones',saveRecordingsSub:'Conservar audio para reproducir despu\u00E9s',
+      interfaceLang:'Idioma de interfaz',interfaceLangHint:'Cambia el idioma de los men\u00FAs y botones de Glossa. NO afecta los idiomas entre los que puedes traducir.',
+      advancedSettings:'Configuraci\u00F3n avanzada'
+    },
+    fr: {
+      navHome:'Accueil',navPreferences:'Pr\u00E9f\u00E9rences',navHistory:'Historique',navDeveloper:'D\u00E9veloppeur',navLogs:'\u00C9v\u00E9nements',
+      idleTitle:'Pr\u00EAt \u00E0 traduire',idleDesc:'Appuyez sur D\u00E9marrer et parlez naturellement. Glossa traduira vos mots en temps r\u00E9el.',
+      change:'Modifier',recentSessions:'Sessions r\u00E9centes',you:'Vous',out:'Sortie',
+      languages:'Langues',iSpeak:'Je parle',translateTo:'Traduire vers',
+      microphone:'Microphone',reduceNoise:'R\u00E9duire le bruit de fond',
+      output:'Sortie',playTranslated:'Lire l\'audio traduit',playTranslatedSub:'\u00C9couter les traductions \u00E0 voix haute',
+      saveRecordings:'Sauvegarder les enregistrements',saveRecordingsSub:'Conserver l\'audio pour le r\u00E9\u00E9couter',
+      interfaceLang:'Langue de l\'interface',interfaceLangHint:'Change la langue des menus et boutons de Glossa. N\'affecte PAS les langues de traduction.',
+      advancedSettings:'Param\u00E8tres avanc\u00E9s'
+    },
+    th: {
+      navHome:'\u0E2B\u0E19\u0E49\u0E32\u0E41\u0E23\u0E01',navPreferences:'\u0E01\u0E32\u0E23\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32',navHistory:'\u0E1B\u0E23\u0E30\u0E27\u0E31\u0E15\u0E34',navDeveloper:'\u0E19\u0E31\u0E01\u0E1E\u0E31\u0E12\u0E19\u0E32',navLogs:'\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01',
+      idleTitle:'\u0E1E\u0E23\u0E49\u0E2D\u0E21\u0E41\u0E1B\u0E25',idleDesc:'\u0E01\u0E14\u0E40\u0E23\u0E34\u0E48\u0E21\u0E41\u0E25\u0E30\u0E1E\u0E39\u0E14\u0E15\u0E32\u0E21\u0E18\u0E23\u0E23\u0E21\u0E0A\u0E32\u0E15\u0E34 Glossa \u0E08\u0E30\u0E41\u0E1B\u0E25\u0E04\u0E33\u0E1E\u0E39\u0E14\u0E02\u0E2D\u0E07\u0E04\u0E38\u0E13\u0E41\u0E1A\u0E1A\u0E40\u0E23\u0E35\u0E22\u0E25\u0E44\u0E17\u0E21\u0E4C',
+      change:'\u0E40\u0E1B\u0E25\u0E35\u0E48\u0E22\u0E19',recentSessions:'\u0E40\u0E0B\u0E2A\u0E0A\u0E31\u0E19\u0E25\u0E48\u0E32\u0E2A\u0E38\u0E14',you:'\u0E04\u0E38\u0E13',out:'\u0E40\u0E2D\u0E32\u0E15\u0E4C\u0E1E\u0E38\u0E15',
+      languages:'\u0E20\u0E32\u0E29\u0E32',iSpeak:'\u0E09\u0E31\u0E19\u0E1E\u0E39\u0E14',translateTo:'\u0E41\u0E1B\u0E25\u0E40\u0E1B\u0E47\u0E19',
+      microphone:'\u0E44\u0E21\u0E42\u0E04\u0E23\u0E42\u0E1F\u0E19',reduceNoise:'\u0E25\u0E14\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E23\u0E1A\u0E01\u0E27\u0E19',
+      output:'\u0E40\u0E2D\u0E32\u0E15\u0E4C\u0E1E\u0E38\u0E15',playTranslated:'\u0E40\u0E25\u0E48\u0E19\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E41\u0E1B\u0E25',playTranslatedSub:'\u0E1F\u0E31\u0E07\u0E04\u0E33\u0E41\u0E1B\u0E25\u0E17\u0E35\u0E48\u0E1E\u0E39\u0E14\u0E2D\u0E2D\u0E01\u0E21\u0E32',
+      saveRecordings:'\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01\u0E40\u0E2A\u0E35\u0E22\u0E07',saveRecordingsSub:'\u0E40\u0E01\u0E47\u0E1A\u0E40\u0E2A\u0E35\u0E22\u0E07\u0E44\u0E27\u0E49\u0E1F\u0E31\u0E07\u0E17\u0E35\u0E2B\u0E25\u0E31\u0E07',
+      interfaceLang:'\u0E20\u0E32\u0E29\u0E32\u0E2D\u0E34\u0E19\u0E40\u0E17\u0E2D\u0E23\u0E4C\u0E40\u0E1F\u0E0B',interfaceLangHint:'\u0E40\u0E1B\u0E25\u0E35\u0E48\u0E22\u0E19\u0E20\u0E32\u0E29\u0E32\u0E02\u0E2D\u0E07\u0E40\u0E21\u0E19\u0E39\u0E41\u0E25\u0E30\u0E1B\u0E38\u0E48\u0E21\u0E43\u0E19 Glossa \u0E44\u0E21\u0E48\u0E21\u0E35\u0E1C\u0E25\u0E15\u0E48\u0E2D\u0E20\u0E32\u0E29\u0E32\u0E17\u0E35\u0E48\u0E41\u0E1B\u0E25\u0E44\u0E14\u0E49',
+      advancedSettings:'\u0E01\u0E32\u0E23\u0E15\u0E31\u0E49\u0E07\u0E04\u0E48\u0E32\u0E02\u0E31\u0E49\u0E19\u0E2A\u0E39\u0E07'
+    }
+  };
+
+  var langCodeMap = {'English':'en','Japanese':'ja','Chinese Simplified':'zh','Korean':'ko','Spanish':'es','French':'fr','Vietnamese':'vi','Thai':'th'};
+
+  function applyLanguage(code){
+    var dict = i18n[code] || i18n.en;
+    $$('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if(dict[key]) el.textContent = dict[key];
+    });
+    showToast(code === 'en' ? 'Language: English' : 'Language changed', 'info');
+  }
+
+  /* ═══════ PARTICIPANT LOGS ═══════ */
+  var participantLogs = [
+    {dir:'up',time:'14:32:01.520',event:'session.create',tag:'participant'},
+    {dir:'down',time:'14:32:01.740',event:'session.created',tag:'server'},
+    {dir:'up',time:'14:32:02.415',event:'audio.start',tag:'participant'},
+    {dir:'down',time:'14:32:02.587',event:'audio.ack',tag:'server'},
+    {dir:'up',time:'14:32:05.842',event:'input_audio_buffer.append',tag:'participant'},
+    {dir:'up',time:'14:32:06.291',event:'input_audio_buffer.append',tag:'participant'},
+    {dir:'down',time:'14:32:06.672',event:'response.audio_transcript.delta',tag:'server'},
+    {dir:'down',time:'14:32:06.891',event:'response.audio.delta',tag:'server'},
+    {dir:'down',time:'14:32:07.120',event:'response.audio_transcript.done',tag:'server'},
+    {dir:'down',time:'14:32:07.340',event:'conversation.item.created',tag:'server'},
+    {dir:'down',time:'14:32:07.512',event:'response.done',tag:'server'},
+    {dir:'down',time:'14:32:08.990',event:'rate_limits.updated',tag:'server'}
+  ];
+
+  var currentLogTab = 'speaker';
+
+  function renderLogsForTab(tab){
+    currentLogTab = tab;
+    var data = tab === 'speaker' ? mockLogs : participantLogs;
+    var body = $('#logsBody');
+    body.innerHTML = data.map(function(log){
+      var arrowClass = log.dir === 'up' ? 'log-entry__arrow--up' : 'log-entry__arrow--down';
+      var arrow = log.dir === 'up' ? '\u2191' : '\u2193';
+      return '<div class="log-entry"><span class="log-entry__arrow '+arrowClass+'">'+arrow+'</span><span class="log-entry__time">'+log.time+'</span><span class="log-entry__event">'+log.event+'</span><span class="log-entry__tag">'+log.tag+'</span></div>';
+    }).join('');
+    // Update tab styles
+    $('#logsTabSpeaker').style.borderBottomColor = tab === 'speaker' ? 'var(--accent)' : 'transparent';
+    $('#logsTabSpeaker').style.color = tab === 'speaker' ? 'var(--accent)' : 'var(--muted)';
+    $('#logsTabParticipant').style.borderBottomColor = tab === 'participant' ? 'var(--accent)' : 'transparent';
+    $('#logsTabParticipant').style.color = tab === 'participant' ? 'var(--accent)' : 'var(--muted)';
+  }
+
+  /* ═══════ EVENT LISTENERS ═══════ */
+
+  // Session button
+  $('#sessionBtn').addEventListener('click',function(){
+    if(state.session === 'idle') startSession();
+    else if(state.session === 'live') endSession();
+  });
+
+  // Idle start button (if present)
+  if($('#idleStartBtn')) $('#idleStartBtn').addEventListener('click',function(){
+    if(state.session === 'idle') startSession();
+  });
+
+  // Spacebar to start
+  document.addEventListener('keydown',function(e){
+    if(e.code === 'Space' && state.session === 'idle' && !state.activeDrawer && !e.target.closest('input,select,textarea,button')){
+      e.preventDefault();
+      startSession();
+    }
+  });
+
+  // Sidebar nav
+  $$('.sidebar__item[data-panel]').forEach(function(b){
+    b.addEventListener('click',function(){openDrawer(b.dataset.panel)});
+  });
+  $$('.sidebar__item[data-nav="home"]').forEach(function(b){
+    b.addEventListener('click',function(){
+      closeDrawer();
+      $$('.sidebar__item').forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active');
+    });
+  });
+
+  // User avatar -> Account
+  $('.sidebar__user').addEventListener('click',function(){openDrawer('account')});
+
+  // Drawer close buttons
+  $$('[data-close]').forEach(function(b){b.addEventListener('click',closeDrawer)});
+  $('#scrim').addEventListener('click',closeDrawer);
+
+  // Edit lang
+  $('#editLangBtn').addEventListener('click',function(){openDrawer('preferences')});
+
+  // Transport lang area -> mode picker
+  $('#transportLangBtn').addEventListener('click',function(e){
+    e.stopPropagation();
+    togglePopover('modePicker');
+  });
+
+  // Stage toolbar buttons
+  $('#toolbarExport').addEventListener('click',function(e){e.stopPropagation();togglePopover('exportPopover')});
+  $('#toolbarDisplay').addEventListener('click',function(e){e.stopPropagation();togglePopover('displayPopover')});
+  $('#toolbarClear').addEventListener('click',function(){$('#convView').innerHTML='';showToast('Conversation cleared','info')});
+  $('#toolbarFontUp').addEventListener('click',function(){
+    state.fontSize = Math.min(22,state.fontSize+1);
+    $('#convView').style.fontSize = state.fontSize+'px';
+    $('#fontSlider').value = state.fontSize;
+    $('#fontSliderVal').textContent = state.fontSize;
+  });
+  $('#toolbarFontDown').addEventListener('click',function(){
+    state.fontSize = Math.max(11,state.fontSize-1);
+    $('#convView').style.fontSize = state.fontSize+'px';
+    $('#fontSlider').value = state.fontSize;
+    $('#fontSliderVal').textContent = state.fontSize;
+  });
+
+  // Export options
+  $$('.export-option').forEach(function(o){
+    o.addEventListener('click',function(){
+      var action = o.dataset.action;
+      if(action === 'copy') showToast('Transcript copied to clipboard','success');
+      else if(action === 'txt') showToast('Downloaded transcript.txt','success');
+      else if(action === 'json') showToast('Downloaded transcript.json','success');
+      closeAllPopovers();
+    });
+  });
+
+  // Display settings - segment control
+  $$('#showingSegment .segment-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      $$('#showingSegment .segment-btn').forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+      showToast('Showing: '+btn.dataset.show,'info');
+    });
+  });
+
+  // Display settings - font slider
+  $('#fontSlider').addEventListener('input',function(){
+    state.fontSize = parseInt(this.value);
+    $('#fontSliderVal').textContent = state.fontSize;
+    $('#convView').style.fontSize = state.fontSize+'px';
+  });
+
+  // All toggles
+  $$('.toggle').forEach(function(t){
+    t.addEventListener('click',function(){t.classList.toggle('on')});
+  });
+
+  // CC toggle
+  $('#subtitleToggle').addEventListener('click',function(){
+    this.classList.toggle('active');
+    showToast(this.classList.contains('active')?'Subtitles on':'Subtitles off','info');
+  });
+
+  // Mode options
+  $$('.mode-option').forEach(function(o){
+    o.addEventListener('click',function(){
+      $$('.mode-option').forEach(function(x){x.classList.remove('selected')});
+      o.classList.add('selected');
+      state.mode = o.dataset.mode;
+      closeAllPopovers();
+    });
+  });
+
+  // ═══════ PREFERENCE TABS ═══════
+  function switchPrefTab(tabId){
+    $$('.pref-tab').forEach(function(t){
+      t.style.borderBottomColor = t.dataset.prefTab === tabId ? 'var(--accent)' : 'transparent';
+      t.style.color = t.dataset.prefTab === tabId ? 'var(--accent)' : 'var(--muted)';
+      t.classList.toggle('active', t.dataset.prefTab === tabId);
+    });
+    ['setup','advanced'].forEach(function(id){
+      var el = $('#prefTab-'+id);
+      if(el) el.classList.toggle('hidden', id !== tabId);
+    });
+  }
+  $$('.pref-tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      switchPrefTab(tab.dataset.prefTab);
+    });
+  });
+
+
+
+  // Provider select -> show appropriate auth fields
+  $('#providerSelect').addEventListener('change',function(){
+    var v = this.value;
+    var noAuth = ['glossa','local','native'];
+    var dualKey = ['volcST','volcAST2','zoom'];
+    var clientCreds = ['palabra'];
+    $('#advApiKey').style.display = (!noAuth.includes(v) && !dualKey.includes(v) && !clientCreds.includes(v)) ? 'block' : 'none';
+    $('#dualKeyGroup').style.display = dualKey.includes(v) ? 'block' : 'none';
+    $('#clientCredsGroup').style.display = clientCreds.includes(v) ? 'block' : 'none';
+  });
+
+  // Swap languages button
+  var swapBtn = $('#swapLangBtn');
+  if(swapBtn){
+    swapBtn.addEventListener('click',function(){
+      var ml = $('#prefMyLang'), tl = $('#prefTheirLang');
+      var tmp = ml.value; ml.value = tl.value; tl.value = tmp;
+      state.myLang = ml.value; state.theirLang = tl.value;
+      updateLangDisplay();
+      showToast('Languages swapped','info');
+    });
+  }
+
+  // Preferences lang updates
+  $('#prefMyLang').addEventListener('change',function(){state.myLang=this.value;updateLangDisplay()});
+  $('#prefTheirLang').addEventListener('change',function(){state.theirLang=this.value;updateLangDisplay()});
+
+  // Interface language change
+  $('#interfaceLangSelect').addEventListener('change',function(){applyLanguage(this.value)});
+
+  // Theme segment in preferences
+  $$('#themeSegment .segment-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      $$('#themeSegment .segment-btn').forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+      var val = btn.dataset.themeVal;
+      if(val === 'system') val = window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+      setTheme(val);
+    });
+  });
+
+  // All segment controls (generic)
+  $$('.segment-control').forEach(function(seg){
+    if(seg.id === 'themeSegment' || seg.id === 'showingSegment' || seg.id === 'instrModeSegment') return;
+    seg.querySelectorAll('.segment-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        seg.querySelectorAll('.segment-btn').forEach(function(b){b.classList.remove('active')});
+        btn.classList.add('active');
+      });
+    });
+  });
+
+  // Instruction mode segment
+  if($('#instrModeSegment')){
+    $$('#instrModeSegment .segment-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        $$('#instrModeSegment .segment-btn').forEach(function(b){b.classList.remove('active')});
+        btn.classList.add('active');
+      });
+    });
+  }
+
+  // All range sliders: update adjacent value display
+  $$('input[type="range"]').forEach(function(slider){
+    if(slider.id === 'fontSlider') return; // handled separately
+    slider.addEventListener('input',function(){
+      var valEl = this.parentElement.querySelector('span');
+      if(!valEl) return;
+      var v = parseFloat(this.value);
+      if(this.max == 1) valEl.textContent = v.toFixed(2);
+      else if(this.max == 2) valEl.textContent = v.toFixed(1) + 'x';
+      else if(this.max == 60) valEl.textContent = Math.round(v) + '%';
+      else if(this.step == 50 || this.max >= 100) valEl.textContent = Math.round(v);
+      else valEl.textContent = v;
+    });
+  });
+
+  // Support & docs links
+  document.addEventListener('click',function(e){
+    if(e.target.id === 'supportLink') showToast('Opening support page\u2026','info');
+    if(e.target.id === 'docsLink') showToast('Opening documentation\u2026','info');
+  });
+
+  // Restart tutorial
+  $('#restartTutorial').addEventListener('click',function(){
+    closeDrawer();
+    state.wizardStep = 0;
+    renderWizardStep();
+    $('#wizardOverlay').classList.remove('hidden');
+  });
+
+  // Escape key
+  document.addEventListener('keydown',function(e){
+    if(e.key === 'Escape'){
+      if(state.activePopover) closeAllPopovers();
+      else if(state.activeDrawer) closeDrawer();
+    }
+  });
+
+  // Logs tabs
+  $('#logsTabSpeaker').addEventListener('click',function(){renderLogsForTab('speaker')});
+  $('#logsTabParticipant').addEventListener('click',function(){renderLogsForTab('participant')});
+  $('#logsCopy').addEventListener('click',function(){showToast('Logs copied (NDJSON)','success')});
+  $('#logsClear').addEventListener('click',function(){$('#logsBody').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">No log entries</div>';showToast('Logs cleared','info')});
+
+  // History items clickable
+  document.addEventListener('click',function(e){
+    var hi = e.target.closest('.history-item');
+    if(hi){
+      var title = hi.querySelector('.history-item__title').textContent;
+      var body = $('#historyBody');
+      body.innerHTML = '<div style="margin-bottom:16px"><button class="form-btn form-btn--ghost" id="historyBack" style="font-size:12px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button></div><div style="font:600 16px/1.3 var(--f-display);color:var(--ink);margin-bottom:16px">'+title+'</div><button class="form-btn form-btn--primary" id="historySummarize">Summarize with AI</button><div style="margin-top:16px"><button class="form-btn form-btn--ghost" id="historyExportMd">Export as Markdown</button></div><div id="historySummaryArea"></div>';
+      $('#historyBack').addEventListener('click',function(){renderHistory();wireHistoryItems()});
+      $('#historySummarize').addEventListener('click',function(){
+        this.textContent='Summarizing\u2026';this.disabled=true;
+        var btn=this;
+        setTimeout(function(){
+          btn.textContent='Summarize with AI';btn.disabled=false;
+          $('#historySummaryArea').innerHTML='<div style="margin-top:20px;padding:16px;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--bg-3)"><div style="font:600 13px/1.3 var(--f-body);color:var(--ink);margin-bottom:8px">Meeting Summary</div><ul style="padding-left:16px;font:400 13px/1.6 var(--f-body);color:var(--ink-3)"><li>Quarterly revenue up 12%</li><li>New translation feature well received</li><li>5 additional languages planned for next quarter</li><li>Glossa rebrand includes full visual refresh</li><li>Backward compatibility maintained</li></ul></div>';
+          showToast('Summary generated','success');
+        },2000);
+      });
+      $('#historyExportMd').addEventListener('click',function(){showToast('Exported '+title+'.md','success')});
+    }
+  });
+  function wireHistoryItems(){}
+
+  // Recent session items
+  $$('.idle__recent-item').forEach(function(item){
+    item.addEventListener('click',function(){openDrawer('history')});
+  });
+
+  // Upgrade button
+  document.addEventListener('click',function(e){
+    if(e.target.closest && e.target.textContent.trim()==='Upgrade to Premium'){
+      showToast('Redirecting to upgrade page\u2026','info');
+    }
+    if(e.target.closest && e.target.textContent.trim()==='Sign Out'){
+      showToast('Signed out','success');
+    }
+    if(e.target.closest && e.target.textContent.trim()==='Validate'){
+      var btn=e.target;btn.textContent='Validating\u2026';btn.disabled=true;
+      setTimeout(function(){btn.textContent='Validate';btn.disabled=false;showToast('API key validated','success')},1200);
+    }
+  });
+
+  // Play buttons on conversation turns
+  document.addEventListener('click',function(e){
+    var playBtn = e.target.closest('.conv-meta__play');
+    if(playBtn){
+      playBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Playing\u2026';
+      var p=playBtn;
+      setTimeout(function(){
+        p.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play';
+      },2000);
+    }
+  });
+
+  // Click outside popover
+  document.addEventListener('click',function(e){
+    if(state.activePopover && !e.target.closest('.popover') && !e.target.closest('.stage-toolbar__btn') && !e.target.closest('.transport__lang')){
+      closeAllPopovers();
+    }
+  });
+})();
+</script>
+</body>
+</html>
